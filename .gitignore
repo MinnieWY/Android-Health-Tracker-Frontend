@@ -19,17 +19,11 @@ web-build/
 # Metro
 .metro-health-check*
 
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
+# testing
+/coverage
 
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
+# Expo
+.expo
+__generated__
+web-build
+bare-apps
