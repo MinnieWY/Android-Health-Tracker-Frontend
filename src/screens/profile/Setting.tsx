@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 
-const Profile = () => {
+const Setting = () => {
     const navigation = useNavigation();
 
     const openMenu = () => {
@@ -96,4 +96,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Profile;
+export default Setting;
