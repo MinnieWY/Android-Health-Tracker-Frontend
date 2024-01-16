@@ -4,6 +4,7 @@
     "slug": "ht_frontend",
     "version": "1.0.0",
     "orientation": "portrait",
+    "scheme": "ht2024",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
