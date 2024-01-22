@@ -1,39 +1,38 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserDTO } from '../../common/dto';
 
-const Profile = () => {
-    const navigation = useNavigation();
+const ProfileScreen = () => {
+    const [userInfo, setUserInfo] = useState<UserDTO | null>(null); // Set the initial state type as UserDTO|null
 
-    const openMenu = () => {
-        navigation.dispatch(DrawerActions.openDrawer()); // Open the menu drawer
-    };
+    useEffect(() => {
+        // Fetch the user information from the backend using the stored user id
+        const fetchUserInfo = async () => {
+            try {
+                const userId = await AsyncStorage.getItem('userId');
+                // Make a request to the backend user endpoint with the userId as a path variable
+                const response = await fetch(`http://192.168.0.159:8080/${userId}`);
+                const data: UserDTO = await response.json(); // Parse the fetched data as UserDTO
+                setUserInfo(data);
+            } catch (error) {
+                console.error('Error fetching user information:', error);
+            }
+        };
+
+        fetchUserInfo();
+    }, []);
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.menuButton} onPress={openMenu}>
-                <Ionicons name="menu" size={24} color="black" />
-            </TouchableOpacity>
-            <View style={styles.header}>
-                <Image source={require('../../assets/logo.png')} style={styles.profilePicture} />
-                <Text style={styles.username}>John Doe</Text>
-            </View>
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Personal Information</Text>
-                <View style={styles.infoItem}>
-                    <Text style={styles.infoLabel}>Email:</Text>
-                    <Text style={styles.infoValue}>johndoe@gmail.com</Text>
-                </View>
-                <View style={styles.infoItem}>
-                    <Text style={styles.infoLabel}>Phone:</Text>
-                    <Text style={styles.infoValue}>+1 123 456 7890</Text>
-                </View>
-                {/* Add more info items as needed */}
-            </View>
-            <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Sign Out</Text>
-            </TouchableOpacity>
+            {userInfo ? (
+                <>
+                    <Text style={styles.label}>Username: {userInfo.username}</Text>
+                    <Text style={styles.label}>Email: {userInfo.email}</Text>
+                </>
+            ) : (
+                <Text>Loading user information...</Text>
+            )}
         </View>
     );
 };
@@ -41,59 +40,14 @@ const Profile = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
-        backgroundColor: '#ffffff',
-    },
-    menuButton: {
-        position: 'absolute',
-        top: 16,
-        right: 16,
-        zIndex: 1,
-    },
-    header: {
         alignItems: 'center',
-        marginBottom: 24,
+        justifyContent: 'center',
     },
-    profilePicture: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        marginBottom: 16,
-    },
-    username: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    section: {
-        marginBottom: 24,
-    },
-    sectionTitle: {
+    label: {
         fontSize: 16,
         fontWeight: 'bold',
-        marginBottom: 12,
-    },
-    infoItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    infoLabel: {
-        fontWeight: 'bold',
-        marginRight: 8,
-    },
-    infoValue: {
-        flex: 1,
-    },
-    button: {
-        backgroundColor: '#ff0000',
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: '#ffffff',
-        fontWeight: 'bold',
+        marginBottom: 10,
     },
 });
 
-export default Profile;
+export default ProfileScreen;
