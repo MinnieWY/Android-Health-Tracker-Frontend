@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../redux/actions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../AuthContext';
 
 const Login = ({ navigation }) => {
@@ -11,29 +12,30 @@ const Login = ({ navigation }) => {
     const [password, setPassword] = useState('a3423');
     const [error, setError] = useState('');
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         setError('');
-        // Call the backend API to perform login
-        fetch('http://192.168.0.159:8080/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username,
-                password,
-            }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                dispatch(loginSuccess()); // Dispatch the loginSuccess action upon successful login
-                setIsLoggedIn(true);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                setError('An unexpected error occurred');
+        try {
+            const response = await fetch('http://192.168.0.159:8080/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                }),
             });
 
+            const data = await response.json();
+            console.log(data);
+            const userId = data.id;
+            await AsyncStorage.setItem('userId', JSON.stringify(userId)); // Store the token using AsyncStorage
+            dispatch(loginSuccess()); // Dispatch the loginSuccess action upon successful login
+            setIsLoggedIn(true);
+        } catch (error) {
+            console.error('Error:', error);
+            setError('An unexpected error occurred');
+        }
     };
 
     const handleForgotPassword = () => {
@@ -86,4 +88,3 @@ const styles = StyleSheet.create({
 });
 
 export default Login;
-
