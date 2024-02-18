@@ -8,8 +8,8 @@ import ForgetPassword from './src/screens/login/ForgetPassword';
 import Registration from './src/screens/login/Registration';
 import Dashboard from './src/screens/dashboard/Dashboard';
 import Profile from './src/screens/profile/Profile';
-import Community from './src/screens/community/Community';
-import { View, Image } from 'react-native';
+import CommunityStack from './src/screens/community/CommunityStack';
+import { View, Image, StyleSheet } from 'react-native';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import rootReducer from './src/redux/reducers';
@@ -19,10 +19,11 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const store = createStore(rootReducer);
 
+
 function SplashScreen() {
   return (
     <View>
-      <Image source={require('./src/assets/logo.png')} />
+      <Image source={require('./src/assets/logo.png')} style={styles.logo} />
     </View>
   );
 
@@ -59,10 +60,12 @@ const AuthenticatedStack = () => {
         },
         tabBarActiveTintColor: 'tomato',
         tabBarInactiveTintColor: 'gray',
+        headerShown: false,
       })}
+      options={{ headerShown: false }}
     >
       <Tab.Screen name="Dashboard" component={Dashboard} />
-      <Tab.Screen name="Community" component={Community} />
+      <Tab.Screen name="CommunityStack" component={CommunityStack} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );
@@ -96,3 +99,20 @@ export default function App() {
     </Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 300,
+    height: 300,
+    resizeMode: 'contain',
+  },
+});
