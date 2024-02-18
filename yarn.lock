@@ -6010,10 +6010,10 @@
     "invariant" "^2.2.4"
     "opencollective-postinstall" "^2.0.3"
 
-"react-native-paper@^5.10.6":
-  "integrity" "sha512-n5r2S53/pGpHRyQV/n75W8ibU+VyamMGSqKWGSti9ZmChcgEWC0s4o/TnpUvmAKNZCQwcYwKSLrmMq5wR5nUNA=="
-  "resolved" "https://registry.npmjs.org/react-native-paper/-/react-native-paper-5.10.6.tgz"
-  "version" "5.10.6"
+"react-native-paper@^5.12.1":
+  "integrity" "sha512-6ZBBJBsHxXUG5mD22Q0tArTlk5GpGlhZDkRU1RRqPtTpxWCMc7Dbc04pU3+qG0peJQCAO6GnXqUbkZ0YLnMPNg=="
+  "resolved" "https://registry.npmjs.org/react-native-paper/-/react-native-paper-5.12.1.tgz"
+  "version" "5.12.1"
   dependencies:
     "@callstack/react-theme-provider" "^3.0.9"
     "color" "^3.1.2"
