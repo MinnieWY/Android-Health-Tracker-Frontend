@@ -1,38 +1,64 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
 
 const Dashboard = () => {
-    const [sleepData, setSleepData] = useState(null);
+    const [hrvData, setHrvData] = useState(null);
 
     useEffect(() => {
-        // Fetch sleep data from Fitbit web API
-        const fetchSleepData = async () => {
+        // Fetch HRV data from the backend API
+        const fetchHrvData = async () => {
             try {
-                // Make the API request and retrieve sleep data
-                const response = await fetch('https://api.fitbit.com/sleep');
+                const response = await fetch("http://192.168.0.159:8080/dashboard", {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
                 const data = await response.json();
 
-                // Update the sleep data state variable
-                setSleepData(data);
+                setHrvData(data.hrv);
             } catch (error) {
-                console.error('Error fetching sleep data:', error);
+                console.error('Error fetching HRV data:', error);
             }
         };
 
-        fetchSleepData();
+        fetchHrvData();
     }, []);
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Dashboard</Text>
-            {sleepData ? (
-                <View style={styles.sleepDataContainer}>
-                    <Text style={styles.sleepDataTitle}>Sleeping Information:</Text>
-                    <Text style={styles.sleepDataValue}>{sleepData.duration} hours</Text>
-                    {/* Display additional sleep data as needed */}
+            {hrvData ? (
+                <View style={styles.hrvDataContainer}>
+                    <Text style={styles.hrvDataTitle}>HRV Information:</Text>
+                    <LineChart
+                        data={{
+                            labels: Object.keys(hrvData).map(date => date.substring(5, 10)),
+                            datasets: [
+                                {
+                                    data: Object.values(hrvData),
+                                },
+                            ],
+                        }}
+                        width={Dimensions.get('window').width - 32} // Adjust the width as needed
+                        height={220}
+                        yAxisLabel=""
+                        chartConfig={{
+                            backgroundColor: '#f3f3f3',
+                            backgroundGradientFrom: '#f3f3f3',
+                            backgroundGradientTo: '#f3f3f3',
+                            decimalPlaces: 0,
+                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        }}
+                        bezier
+                        style={styles.chart}
+                    />
                 </View>
             ) : (
-                <Text style={styles.loadingText}>Loading sleep data...</Text>
+                <Text style={styles.loadingText}>Loading HRV data...</Text>
             )}
         </View>
     );
@@ -49,23 +75,28 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 16,
     },
-    sleepDataContainer: {
+    hrvDataContainer: {
         backgroundColor: '#f3f3f3',
-        padding: 16,
+        padding: 10,
         borderRadius: 8,
         marginBottom: 16,
     },
-    sleepDataTitle: {
+    hrvDataTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 8,
     },
-    sleepDataValue: {
+    hrvDataValue: {
         fontSize: 16,
     },
     loadingText: {
         fontSize: 16,
         fontStyle: 'italic',
+    },
+    chart: {
+        marginVertical: 8,
+        borderRadius: 8,
+        alignSelf: 'flex-start',
     },
 });
 
