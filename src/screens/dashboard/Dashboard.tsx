@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
+import { LineChart, BarChart } from 'react-native-chart-kit';
 
 const Dashboard = () => {
     const [hrvData, setHrvData] = useState(null);
+    const [stepsData, setStepsData] = useState(null);
 
     useEffect(() => {
         // Fetch HRV data from the backend API
@@ -17,10 +18,10 @@ const Dashboard = () => {
                 });
 
                 const data = await response.json();
-
                 setHrvData(data.hrv);
+                setStepsData(data.steps);
             } catch (error) {
-                console.error('Error fetching HRV data:', error);
+                console.error('Error fetching Dashboard data:', error);
             }
         };
 
@@ -60,6 +61,35 @@ const Dashboard = () => {
             ) : (
                 <Text style={styles.loadingText}>Loading HRV data...</Text>
             )}
+            {stepsData ? (
+                <View style={styles.stepsDataContainer}>
+                    <Text style={styles.stepsDataTitle}>Steps Information:</Text>
+                    <BarChart
+                        data={{
+                            labels: Object.keys(stepsData).map(date => date.substring(5, 10)),
+                            datasets: [
+                                {
+                                    data: Object.values(stepsData),
+                                },
+                            ],
+                        }}
+                        width={Dimensions.get('window').width - 70} // Adjust the width as needed
+                        height={220}
+                        yAxisLabel=""
+                        chartConfig={{
+                            backgroundColor: '#f3f3f3',
+                            backgroundGradientFrom: '#f3f3f3',
+                            backgroundGradientTo: '#f3f3f3',
+                            decimalPlaces: 0,
+                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        }}
+                        style={styles.chart}
+                    />
+                </View>
+            ) : (
+                <Text style={styles.loadingText}>Loading steps data...</Text>
+            )}
         </View>
     );
 };
@@ -97,6 +127,18 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         borderRadius: 8,
         alignSelf: 'flex-start',
+    },
+    stepsDataContainer: {
+        backgroundColor: '#f3f3f3',
+        padding: 8,
+        borderRadius: 8,
+        marginBottom: 16,
+        overflow: 'hidden',
+    },
+    stepsDataTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 8,
     },
 });
 
