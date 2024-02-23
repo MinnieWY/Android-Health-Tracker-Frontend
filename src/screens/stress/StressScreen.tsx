@@ -32,7 +32,7 @@ const StressScreen = (navigation) => {
         const fetchTodayStressData = async () => {
             try {
                 const userId = await AsyncStorage.getItem('userId');
-                const response = await fetch(baseStressURL + 'input/today', {
+                const response = await fetch(baseStressURL + 'today', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
