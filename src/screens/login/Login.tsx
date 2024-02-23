@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../redux/actions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../AuthContext';
+import { UserDTO } from '../../common/dto';
 
 const Login = ({ navigation }) => {
     const { setIsLoggedIn } = useContext(AuthContext);
@@ -25,11 +26,15 @@ const Login = ({ navigation }) => {
                     password,
                 }),
             });
+            const data: UserDTO = await response.json();
+            console.log('Data:', data);
 
-            const data = await response.json();
-            console.log(data);
-            const userId = data.id;
-            await AsyncStorage.setItem('userId', JSON.stringify(userId)); // Store the token using AsyncStorage
+            await AsyncStorage.setItem('userId', JSON.stringify(data.id));
+            await AsyncStorage.setItem('username', JSON.stringify(data.username));
+            if (data.preference) {
+                await AsyncStorage.setItem('userPreference', JSON.stringify(data.preference));
+            }
+
             dispatch(loginSuccess()); // Dispatch the loginSuccess action upon successful login
             setIsLoggedIn(true);
         } catch (error) {
