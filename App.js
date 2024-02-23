@@ -32,10 +32,7 @@ function SplashScreen() {
 function AuthStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Login"
-        component={Login}
-      />
+      <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
       <Stack.Screen name="Registration" component={Registration} />
     </Stack.Navigator>
