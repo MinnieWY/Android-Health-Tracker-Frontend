@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, FlatList, Button } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, FlatList, Button, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { LineChart, BarChart } from 'react-native-chart-kit';
-import { List } from 'react-native-paper';
+import { Card, List } from 'react-native-paper';
 import { MaterialListItemDTO } from '../../common/dto';
 
-const Dashboard = (navigation) => {
+const DashboardScreen = ({ navigation }) => {
     const [hrvData, setHrvData] = useState(null);
     const [stepsData, setStepsData] = useState(null);
     const [recommendedMaterials, setRecommendedMaterials] = useState([]);
@@ -61,19 +61,21 @@ const Dashboard = (navigation) => {
         };
 
         fetchDashboardData();
-        fetchRecommendedMaterials();
-    }, []);
+        if (userPreference != null) {
+            fetchRecommendedMaterials();
+        }
+    }, [userPreference]);
 
     const handleUpdatePreference = async () => {
         try {
-            // Perform the update preference API call with the selectedPreference value
-            const response = await fetch('http://192.168.0.159:8080/recommmendation/update-preference', {
+            const userId = await AsyncStorage.getItem('userId');
+            const response = await fetch('http://192.168.0.159:8080/recommendation/update-preference', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    userId: await AsyncStorage.getItem('userId'),
+                    userId,
                     preference: selectedPreference
                 }),
             });
@@ -85,17 +87,20 @@ const Dashboard = (navigation) => {
     };
 
     const renderRecommendedMaterialItem = ({ item }) => (
-        <List.Item
+        <TouchableOpacity
             key={item.id}
-            title={item.name}
-            description={item.shortDescription}
             onPress={() => handleMaterialPress(item.id)}
-        />
+        >
+            <Card>
+                <Card.Content>
+                    <Text style={styles.recommendedMaterialTitle}>{item.name}</Text>
+                    <Text style={styles.recommendedMaterialDescription}>{item.shortDescription}</Text>
+                </Card.Content>
+            </Card>
+        </TouchableOpacity>
     );
 
     const handleMaterialPress = (materialId) => {
-        // Navigate to the material detail screen
-        // You can implement the navigation logic here
         console.log('Material pressed:', materialId);
     };
 
@@ -104,7 +109,7 @@ const Dashboard = (navigation) => {
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             {hrvData ? (
                 <View style={styles.hrvDataContainer}>
                     <Text style={styles.hrvDataTitle}>HRV Information:</Text>
@@ -165,24 +170,28 @@ const Dashboard = (navigation) => {
                 <Text style={styles.loadingText}>Loading steps data...</Text>
             )}
             {/* Recommendation section */}
-            <View style={styles.recommendationContainer}>
+            <View>
                 <Text style={styles.sectionTitle}>Recommendations</Text>
                 {userPreference === null ? (
                     <View style={styles.preferenceContainer}>
                         <Text style={styles.preferenceLabel}>Select your preference:</Text>
                         <Picker
                             selectedValue={selectedPreference}
-                            onValueChange={(itemValue) => setSelectedPreference(itemValue)}
+                            onValueChange={(itemValue) => {
+                                console.log('Selected preference:', itemValue);
+                                setSelectedPreference(itemValue)
+                            }}
                             style={styles.preferencePicker}
                         >
-                            <Picker.Item label="Video" value="video" />
-                            <Picker.Item label="Article" value="article" />
-                            <Picker.Item label="Soundtrack" value="soundtrack" />
+                            <Picker.Item label="Video" value="video" style={styles.preferenceLabel} />
+                            <Picker.Item label="Article" value="article" style={styles.preferenceLabel} />
+                            <Picker.Item label="Soundtrack" value="soundtrack" style={styles.preferenceLabel} />
                         </Picker>
                         <Button title="Update Preference" onPress={handleUpdatePreference} />
                     </View>
                 ) : (
                     <FlatList
+                        horizontal
                         data={recommendedMaterials}
                         renderItem={renderRecommendedMaterialItem}
                         keyExtractor={(item) => item.id.toString()}
@@ -192,7 +201,7 @@ const Dashboard = (navigation) => {
             <TouchableOpacity onPress={handleViewAllMaterials}>
                 <Text>Check all avaiable materials</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -241,12 +250,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 8,
-    },
-    recommendationContainer: {
-        backgroundColor: '#f3f3f3',
-        padding: 10,
-        borderRadius: 8,
-        marginBottom: 16,
     },
     materialsListContainer: {
         backgroundColor: '#f3f3f3',
@@ -297,4 +300,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Dashboard;
+export default DashboardScreen;

@@ -6,10 +6,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Login from './src/screens/login/Login';
 import ForgetPassword from './src/screens/login/ForgetPassword';
 import Registration from './src/screens/login/Registration';
-import Dashboard from './src/screens/dashboard/Dashboard';
+import DashboardScreen from './src/screens/dashboard/DashboardScreen';
+import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
+import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
 import Profile from './src/screens/profile/Profile';
 import Community from './src/screens/community/Community';
-import { View, Image } from 'react-native';
+import { View, Image, Dimensions } from 'react-native';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import rootReducer from './src/redux/reducers';
@@ -20,12 +22,17 @@ const Tab = createBottomTabNavigator();
 const store = createStore(rootReducer);
 
 function SplashScreen() {
+  const windowWidth = Dimensions.get('window').width;
+  const logoSize = windowWidth * 0.5; // Adjust the scaling factor as needed
+
   return (
     <View>
-      <Image source={require('./src/assets/logo.png')} />
+      <Image
+        source={require('./src/assets/logo.png')}
+        style={{ width: logoSize, height: logoSize }}
+      />
     </View>
   );
-
 }
 
 function AuthStack() {
@@ -34,6 +41,16 @@ function AuthStack() {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
       <Stack.Screen name="Registration" component={Registration} />
+    </Stack.Navigator>
+  );
+}
+
+function Dashboard() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
+      <Stack.Screen name="MaterialList" component={MaterialListScreen} />
+      <Stack.Screen name="MaterialDetail" component={MaterialDetailScreen} />
     </Stack.Navigator>
   );
 }
@@ -58,7 +75,7 @@ const AuthenticatedStack = () => {
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Dashboard" component={Dashboard} />
+      <Tab.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
       <Tab.Screen name="Community" component={Community} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
