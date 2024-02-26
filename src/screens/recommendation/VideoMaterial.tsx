@@ -1,33 +1,38 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
-import { View, Text } from "react-native";
-import { WebView } from 'react-native-webview';
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { View, Text, Button } from "react-native";
+import YoutubePlayer from "react-native-youtube-iframe";
 
 const VideoMaterial = ({ material }) => {
-    const [videoHeight, setVideoHeight] = useState(0);
-    const galleryRef = useRef(null);
+    const [playing, setPlaying] = useState(false);
 
-    const handleLayout = () => {
-        galleryRef.current?.measure((x, y, width) => {
-            if (width) {
-                setVideoHeight(width * 0.65); // 4:3 aspect ratio
-            }
-        });
-    };
-
-    useLayoutEffect(() => {
-        handleLayout();
+    const onStateChange = useCallback((state) => {
+        if (state === "ended") {
+            setPlaying(false);
+            console.log("video has finished playing!");
+        }
     }, []);
 
+    function getVideoId(url: String) {
+        const regExp =
+            /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+
+        const match = url.match(regExp);
+
+        if (match && match[2].length === 11) {
+            return match[2];
+        }
+    }
 
     return (
-        <View ref={galleryRef} onLayout={handleLayout}>
-            {videoHeight > 0 && (
-                <WebView
-                    source={{ uri: material.url }}
-                    style={{ width: "100%", height: videoHeight }}
-                />
-            )}
-            <Text>Description: {material.description}</Text>
+        <View>
+            <YoutubePlayer
+                height={300}
+                play={playing}
+
+                videoId={getVideoId(material.url)}
+                onChangeState={onStateChange}
+            />
+            <Text>{material.description}</Text>
         </View>
     );
 };
