@@ -61,19 +61,21 @@ const Dashboard = (navigation) => {
         };
 
         fetchDashboardData();
-        fetchRecommendedMaterials();
-    }, []);
+        if (userPreference != null) {
+            fetchRecommendedMaterials();
+        }
+    }, [userPreference]);
 
     const handleUpdatePreference = async () => {
         try {
-            // Perform the update preference API call with the selectedPreference value
-            const response = await fetch('http://192.168.0.159:8080/recommmendation/update-preference', {
+            const userId = await AsyncStorage.getItem('userId');
+            const response = await fetch('http://192.168.0.159:8080/recommendation/update-preference', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    userId: await AsyncStorage.getItem('userId'),
+                    userId,
                     preference: selectedPreference
                 }),
             });
@@ -85,26 +87,25 @@ const Dashboard = (navigation) => {
     };
 
     const renderRecommendedMaterialItem = ({ item }) => (
-        <List.Item
+        <TouchableOpacity
             key={item.id}
-            title={item.name}
-            description={item.shortDescription}
+            style={styles.galleryItem}
             onPress={() => handleMaterialPress(item.id)}
-        />
+        >
+            <Text style={styles.galleryItemTitle}>{item.name}</Text>
+        </TouchableOpacity>
     );
 
     const handleMaterialPress = (materialId) => {
-        // Navigate to the material detail screen
-        // You can implement the navigation logic here
         console.log('Material pressed:', materialId);
     };
 
     const handleViewAllMaterials = () => {
-        navigation.navigate('MaterialList');
+        navigation.navigate('RecommendationList');
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             {hrvData ? (
                 <View style={styles.hrvDataContainer}>
                     <Text style={styles.hrvDataTitle}>HRV Information:</Text>
@@ -172,17 +173,21 @@ const Dashboard = (navigation) => {
                         <Text style={styles.preferenceLabel}>Select your preference:</Text>
                         <Picker
                             selectedValue={selectedPreference}
-                            onValueChange={(itemValue) => setSelectedPreference(itemValue)}
+                            onValueChange={(itemValue) => {
+                                console.log('Selected preference:', itemValue);
+                                setSelectedPreference(itemValue)
+                            }}
                             style={styles.preferencePicker}
                         >
-                            <Picker.Item label="Video" value="video" />
-                            <Picker.Item label="Article" value="article" />
-                            <Picker.Item label="Soundtrack" value="soundtrack" />
+                            <Picker.Item label="Video" value="video" style={styles.preferenceLabel} />
+                            <Picker.Item label="Article" value="article" style={styles.preferenceLabel} />
+                            <Picker.Item label="Soundtrack" value="soundtrack" style={styles.preferenceLabel} />
                         </Picker>
                         <Button title="Update Preference" onPress={handleUpdatePreference} />
                     </View>
                 ) : (
                     <FlatList
+                        horizontal
                         data={recommendedMaterials}
                         renderItem={renderRecommendedMaterialItem}
                         keyExtractor={(item) => item.id.toString()}
@@ -192,7 +197,7 @@ const Dashboard = (navigation) => {
             <TouchableOpacity onPress={handleViewAllMaterials}>
                 <Text>Check all avaiable materials</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -294,6 +299,19 @@ const styles = StyleSheet.create({
     },
     recommendedMaterialDescription: {
         fontSize: 14,
+    },
+    galleryItem: {
+        marginRight: 16,
+    },
+    galleryItemImage: {
+        width: 150,
+        height: 150,
+        resizeMode: 'cover',
+        borderRadius: 8,
+    },
+    galleryItemTitle: {
+        fontSize: 14,
+        marginTop: 8,
     },
 });
 
