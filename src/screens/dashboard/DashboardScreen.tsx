@@ -15,24 +15,24 @@ const DashboardScreen = ({ navigation }) => {
 
     useEffect(() => {
         const fetchDashboardData = async () => {
-            // try {
-            //     const userId = await AsyncStorage.getItem('userId');
-            //     const response = await fetch("http://192.168.0.159:8080/dashboard", {
-            //         method: 'POST',
-            //         headers: {
-            //             'Content-Type': 'application/json',
-            //         },
-            //         body: JSON.stringify({
-            //             userId
-            //         }),
-            //     });
+            try {
+                const userId = await AsyncStorage.getItem('userId');
+                const response = await fetch("http://192.168.0.159:8080/dashboard", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId
+                    }),
+                });
 
-            //     const data = await response.json();
-            //     setHrvData(data.hrv);
-            //     setStepsData(data.steps);
-            // } catch (error) {
-            //     console.error('Error fetching Dashboard data:', error);
-            // }
+                const data = await response.json();
+                setHrvData(data.hrv);
+                setStepsData(data.steps);
+            } catch (error) {
+                console.error('Error fetching Dashboard data:', error);
+            }
         };
         const fetchRecommendedMaterials = async () => {
             try {
