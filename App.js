@@ -6,7 +6,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Login from './src/screens/login/Login';
 import ForgetPassword from './src/screens/login/ForgetPassword';
 import Registration from './src/screens/login/Registration';
-import Dashboard from './src/screens/dashboard/Dashboard';
+import DashboardScreen from './src/screens/dashboard/DashboardScreen';
+import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
+import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
 import Profile from './src/screens/profile/Profile';
 import Community from './src/screens/community/Community';
 import { View, Image, Dimensions } from 'react-native';
@@ -43,6 +45,16 @@ function AuthStack() {
   );
 }
 
+function Dashboard() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
+      <Stack.Screen name="MaterialList" component={MaterialListScreen} />
+      <Stack.Screen name="MaterialDetail" component={MaterialDetailScreen} />
+    </Stack.Navigator>
+  );
+}
+
 const AuthenticatedStack = () => {
   return (
     <Tab.Navigator
@@ -63,7 +75,7 @@ const AuthenticatedStack = () => {
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Dashboard" component={Dashboard} />
+      <Tab.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
       <Tab.Screen name="Community" component={Community} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
