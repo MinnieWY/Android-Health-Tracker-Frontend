@@ -9,7 +9,7 @@ import Registration from './src/screens/login/Registration';
 import Dashboard from './src/screens/dashboard/Dashboard';
 import Profile from './src/screens/profile/Profile';
 import Community from './src/screens/community/Community';
-import { View, Image } from 'react-native';
+import { View, Image, Dimensions } from 'react-native';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import rootReducer from './src/redux/reducers';
@@ -20,12 +20,17 @@ const Tab = createBottomTabNavigator();
 const store = createStore(rootReducer);
 
 function SplashScreen() {
+  const windowWidth = Dimensions.get('window').width;
+  const logoSize = windowWidth * 0.5; // Adjust the scaling factor as needed
+
   return (
     <View>
-      <Image source={require('./src/assets/logo.png')} />
+      <Image
+        source={require('./src/assets/logo.png')}
+        style={{ width: logoSize, height: logoSize }}
+      />
     </View>
   );
-
 }
 
 function AuthStack() {
