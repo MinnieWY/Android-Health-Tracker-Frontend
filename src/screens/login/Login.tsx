@@ -31,7 +31,7 @@ const Login = ({ navigation }) => {
             await AsyncStorage.setItem('userId', JSON.stringify(data.data.id));
             await AsyncStorage.setItem('username', data.data.username);
 
-            if (data.preference) {
+            if (data.data.preference) {
                 await AsyncStorage.setItem('preference', data.preference);
             }
 
