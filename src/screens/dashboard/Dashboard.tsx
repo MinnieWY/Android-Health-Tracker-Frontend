@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, FlatList, Button } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, FlatList, Button, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { LineChart, BarChart } from 'react-native-chart-kit';
 import { List } from 'react-native-paper';
