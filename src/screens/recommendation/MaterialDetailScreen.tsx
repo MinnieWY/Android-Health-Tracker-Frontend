@@ -4,48 +4,61 @@ import ArticleMaterial from './ArticleMaterial';
 import SoundtrackMaterial from './SoundtrackMaterial';
 import VideoMaterial from './VideoMaterial';
 import { Headline } from 'react-native-paper';
+import { MaterialItemDTO } from '../../common/dto';
 
 
 const MaterialDetailScreen = ({ route }) => {
-    const [material, setMaterial] = useState({});
+    const [material, setMaterial] = useState<MaterialItemDTO>();
     const { materialId } = route.params;
 
     useEffect(() => {
         const fetchMaterial = async () => {
             try {
-                const response = await fetch(`http://192.168.0.159:8080/recommendation/material/{materialId}`);
-                const data = await response.json();
+                const response = await fetch(`http://192.168.0.159:8080/recommendation/${materialId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const data: MaterialItemDTO = await response.json();
                 setMaterial(data);
             } catch (error) {
                 console.error('Error fetching material:', error);
             }
         }
         fetchMaterial();
-    }, []);
+    }, [materialId]);
 
-    let MaterialComponent;
-    switch (material.type) {
-        case 'video':
-            MaterialComponent = VideoMaterial;
-            break;
-        case 'article':
-            MaterialComponent = ArticleMaterial;
-            break;
-        case 'soundtrack':
-            MaterialComponent = SoundtrackMaterial;
-            break;
-        default:
-            MaterialComponent = () => (
-                <View>
-                    <Text>Unsupported material type.</Text>
-                </View>
-            );
+    let MaterialComponent = null;
+    if (material) {
+        switch (material.type) {
+            case 'video':
+                MaterialComponent = VideoMaterial;
+                break;
+            case 'article':
+                MaterialComponent = ArticleMaterial;
+                break;
+            case 'soundtrack':
+                MaterialComponent = SoundtrackMaterial;
+                break;
+            default:
+                MaterialComponent = () => (
+                    <View>
+                        <Text>Unsupported material type.</Text>
+                    </View>
+                );
+                break;
+        }
     }
 
     return (
         <View style={styles.container}>
-            <Headline>{material.name}</Headline>
-            <MaterialComponent material={material} />
+            {material && (
+                <>
+                    <Headline>{material.name}</Headline>
+                    <MaterialComponent material={material} />
+                </>
+            )}
         </View>
     );
 };

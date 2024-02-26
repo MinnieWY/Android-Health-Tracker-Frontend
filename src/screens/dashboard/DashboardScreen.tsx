@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, FlatList, Button, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { LineChart, BarChart } from 'react-native-chart-kit';
-import { List } from 'react-native-paper';
+import { Card, List } from 'react-native-paper';
 import { MaterialListItemDTO } from '../../common/dto';
 
-const Dashboard = (navigation) => {
+const DashboardScreen = ({ navigation }) => {
     const [hrvData, setHrvData] = useState(null);
     const [stepsData, setStepsData] = useState(null);
     const [recommendedMaterials, setRecommendedMaterials] = useState([]);
@@ -15,24 +15,24 @@ const Dashboard = (navigation) => {
 
     useEffect(() => {
         const fetchDashboardData = async () => {
-            try {
-                const userId = await AsyncStorage.getItem('userId');
-                const response = await fetch("http://192.168.0.159:8080/dashboard", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        userId
-                    }),
-                });
+            // try {
+            //     const userId = await AsyncStorage.getItem('userId');
+            //     const response = await fetch("http://192.168.0.159:8080/dashboard", {
+            //         method: 'POST',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //         },
+            //         body: JSON.stringify({
+            //             userId
+            //         }),
+            //     });
 
-                const data = await response.json();
-                setHrvData(data.hrv);
-                setStepsData(data.steps);
-            } catch (error) {
-                console.error('Error fetching Dashboard data:', error);
-            }
+            //     const data = await response.json();
+            //     setHrvData(data.hrv);
+            //     setStepsData(data.steps);
+            // } catch (error) {
+            //     console.error('Error fetching Dashboard data:', error);
+            // }
         };
         const fetchRecommendedMaterials = async () => {
             try {
@@ -89,10 +89,14 @@ const Dashboard = (navigation) => {
     const renderRecommendedMaterialItem = ({ item }) => (
         <TouchableOpacity
             key={item.id}
-            style={styles.galleryItem}
             onPress={() => handleMaterialPress(item.id)}
         >
-            <Text style={styles.galleryItemTitle}>{item.name}</Text>
+            <Card>
+                <Card.Content>
+                    <Text style={styles.recommendedMaterialTitle}>{item.name}</Text>
+                    <Text style={styles.recommendedMaterialDescription}>{item.shortDescription}</Text>
+                </Card.Content>
+            </Card>
         </TouchableOpacity>
     );
 
@@ -101,7 +105,7 @@ const Dashboard = (navigation) => {
     };
 
     const handleViewAllMaterials = () => {
-        navigation.navigate('RecommendationList');
+        navigation.navigate('MaterialList');
     };
 
     return (
@@ -166,7 +170,7 @@ const Dashboard = (navigation) => {
                 <Text style={styles.loadingText}>Loading steps data...</Text>
             )}
             {/* Recommendation section */}
-            <View style={styles.recommendationContainer}>
+            <View>
                 <Text style={styles.sectionTitle}>Recommendations</Text>
                 {userPreference === null ? (
                     <View style={styles.preferenceContainer}>
@@ -247,12 +251,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 8,
     },
-    recommendationContainer: {
-        backgroundColor: '#f3f3f3',
-        padding: 10,
-        borderRadius: 8,
-        marginBottom: 16,
-    },
     materialsListContainer: {
         backgroundColor: '#f3f3f3',
         padding: 10,
@@ -300,19 +298,6 @@ const styles = StyleSheet.create({
     recommendedMaterialDescription: {
         fontSize: 14,
     },
-    galleryItem: {
-        marginRight: 16,
-    },
-    galleryItemImage: {
-        width: 150,
-        height: 150,
-        resizeMode: 'cover',
-        borderRadius: 8,
-    },
-    galleryItemTitle: {
-        fontSize: 14,
-        marginTop: 8,
-    },
 });
 
-export default Dashboard;
+export default DashboardScreen;
