@@ -14,7 +14,7 @@ import ProfileScreen from './src/screens/profile/ProfileScreen';
 import EditPersonalInfoScreen from './src/screens/profile/EditPersonalInfoScreen';
 import AboutUsScreen from './src/screens/profile/AboutUsScreen';
 import Community from './src/screens/community/Community';
-import { View, Image, Dimensions } from 'react-native';
+import { View, Image, Dimensions, StyleSheet } from 'react-native';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import rootReducer from './src/redux/reducers';
