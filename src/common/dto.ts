@@ -30,3 +30,15 @@ export interface MaterialItemDTO {
     url: string;
     content: string;
 }
+
+export interface UserSearchResultDTO {
+    id?: string;
+    username: string;
+}
+
+export interface FriendDTO {
+    id?: string;
+    username: string;
+    email: string;
+    isFriend: boolean;
+}
