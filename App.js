@@ -10,12 +10,15 @@ import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
 import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
 import Profile from './src/screens/profile/ProfileScreen';
+import EditPersonalInfoScreen from './src/screens/profile/EditPersonalInfoScreen';
+import AboutUsScreen from './src/screens/profile/AboutUsScreen';
 import Community from './src/screens/community/Community';
 import { View, Image, Dimensions } from 'react-native';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import rootReducer from './src/redux/reducers';
 import AuthContext from './src/AuthContext';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -68,6 +71,8 @@ function Profile() {
     <Stack.Navigator>
       <Stack.Screen name="ProfileScreen" component={Profile} />
       <Stack.Screen name="Community" component={Community} />
+      <Stack.Screen name="EditPersonalInfo" component={EditPersonalInfoScreen} />
+      <Stack.Screen name="AboutUS" component={AboutUsScreen} />
     </Stack.Navigator>
   );
 
