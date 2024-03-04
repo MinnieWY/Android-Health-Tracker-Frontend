@@ -7,9 +7,10 @@ import Login from './src/screens/login/Login';
 import ForgetPassword from './src/screens/login/ForgetPassword';
 import Registration from './src/screens/login/Registration';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
+import TutorialHomeScreen from './src/screens/tutorial/TutorialHomeScreen';
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
 import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
-import Profile from './src/screens/profile/ProfileScreen';
+import ProfileScreen from './src/screens/profile/ProfileScreen';
 import EditPersonalInfoScreen from './src/screens/profile/EditPersonalInfoScreen';
 import AboutUsScreen from './src/screens/profile/AboutUsScreen';
 import Community from './src/screens/community/Community';
@@ -60,7 +61,7 @@ function Dashboard() {
 function Tutorial() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="TutorialHome" component={TutorialScreen} />
+      <Stack.Screen name="TutorialHome" component={TutorialHomeScreen} />
       <Stack.Screen name="MaterialList" component={MaterialListScreen} />
       <Stack.Screen name="MaterialDetail" component={MaterialDetailScreen} />
     </Stack.Navigator>
@@ -70,7 +71,7 @@ function Tutorial() {
 function Profile() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="ProfileScreen" component={Profile} />
+      <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
       <Stack.Screen name="Community" component={Community} />
       <Stack.Screen name="EditPersonalInfo" component={EditPersonalInfoScreen} />
       <Stack.Screen name="AboutUS" component={AboutUsScreen} />
