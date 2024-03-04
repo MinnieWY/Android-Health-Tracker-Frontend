@@ -29,7 +29,7 @@ function SplashScreen() {
     <View>
       <Image
         source={require('./src/assets/logo.png')}
-        style={{ width: logoSize, height: logoSize }}
+        style={{ width: logoSize, height: logoSize, alignSelf: 'center' }}
       />
     </View>
   );
