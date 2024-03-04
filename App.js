@@ -6,10 +6,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Login from './src/screens/login/Login';
 import ForgetPassword from './src/screens/login/ForgetPassword';
 import Registration from './src/screens/login/Registration';
-import Dashboard from './src/screens/dashboard/Dashboard';
-import Profile from './src/screens/profile/Profile';
+import DashboardScreen from './src/screens/dashboard/DashboardScreen';
+import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
+import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
+import Profile from './src/screens/profile/ProfileScreen';
 import Community from './src/screens/community/Community';
-import { View, Image } from 'react-native';
+import { View, Image, Dimensions } from 'react-native';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import rootReducer from './src/redux/reducers';
@@ -20,12 +22,17 @@ const Tab = createBottomTabNavigator();
 const store = createStore(rootReducer);
 
 function SplashScreen() {
+  const windowWidth = Dimensions.get('window').width;
+  const logoSize = windowWidth * 0.5; // Adjust the scaling factor as needed
+
   return (
     <View>
-      <Image source={require('./src/assets/logo.png')} />
+      <Image
+        source={require('./src/assets/logo.png')}
+        style={{ width: logoSize, height: logoSize, alignSelf: 'center' }}
+      />
     </View>
   );
-
 }
 
 function AuthStack() {
@@ -38,6 +45,34 @@ function AuthStack() {
   );
 }
 
+function Dashboard() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function Tutorial() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="TutorialHome" component={TutorialScreen} />
+      <Stack.Screen name="MaterialList" component={MaterialListScreen} />
+      <Stack.Screen name="MaterialDetail" component={MaterialDetailScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function Profile() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="ProfileScreen" component={Profile} />
+      <Stack.Screen name="Community" component={Community} />
+    </Stack.Navigator>
+  );
+
+}
+
 const AuthenticatedStack = () => {
   return (
     <Tab.Navigator
@@ -47,7 +82,7 @@ const AuthenticatedStack = () => {
 
           if (route.name === 'Dashboard') {
             iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Community') {
+          } else if (route.name === 'Tutorial') {
             iconName = focused ? 'game-controller' : 'game-controller-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
@@ -58,9 +93,9 @@ const AuthenticatedStack = () => {
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Dashboard" component={Dashboard} />
-      <Tab.Screen name="Community" component={Community} />
-      <Tab.Screen name="Profile" component={Profile} />
+      <Tab.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
+      <Tab.Screen name="Tutorial" component={Tutorial} options={{ headerShown: false }} />
+      <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 };

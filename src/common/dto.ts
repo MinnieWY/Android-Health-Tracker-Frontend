@@ -11,4 +11,22 @@ export interface UserDTO {
     password: string;
     email: string;
     status: string;
+    preference: string;
+}
+
+export interface MaterialListItemDTO {
+    id?: string;
+    name: string;
+    shorDescription: string;
+    type: string;
+    url: string;
+    content: string;
+}
+export interface MaterialItemDTO {
+    id?: string;
+    name: string;
+    shorDescription: string;
+    type: string;
+    url: string;
+    content: string;
 }
