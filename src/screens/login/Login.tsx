@@ -26,13 +26,13 @@ const Login = ({ navigation }) => {
                     password,
                 }),
             });
-            const data: UserDTO = await response.json();
-            console.log('Data:', data);
+            const data = await response.json();
 
-            await AsyncStorage.setItem('userId', JSON.stringify(data.id));
-            await AsyncStorage.setItem('username', JSON.stringify(data.username));
-            if (data.preference) {
-                await AsyncStorage.setItem('userPreference', JSON.stringify(data.preference));
+            await AsyncStorage.setItem('userId', JSON.stringify(data.data.id));
+            await AsyncStorage.setItem('username', data.data.username);
+
+            if (data.data.preference) {
+                await AsyncStorage.setItem('preference', data.preference);
             }
 
             dispatch(loginSuccess()); // Dispatch the loginSuccess action upon successful login
