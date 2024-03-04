@@ -2,46 +2,46 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator, Text } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const baseStressURL = 'http://192.168.0.159:8080/stress/';
 
-const StressChart = ({ week }) => {
+const StressChart = () => {
     const [stressData, setStressData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [fetching, setFetching] = useState(true);
+    //const [currentStressLevel, setCurrentStressLevel] = useState(0);
+
 
     useEffect(() => {
         const fetchStressData = async () => {
             try {
                 const userId = await AsyncStorage.getItem('userId');
-                const response = await fetch(baseStressURL + 'stress/weekly', {
+                const response = await fetch(baseStressURL + 'weekly', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         userId,
-                        week,
                     }),
                 });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setStressData(data);
-                } else {
-                    throw new Error('Failed to fetch stress data');
-                }
+                const data = await response.json();
+                setStressData(data);
+                //setCurrentStressLevel(data.length > 0 ? data[data.length - 1].stressLevel : 0);
             } catch (error) {
                 setError('Error fetching stress data: ' + error.message);
             } finally {
                 setLoading(false);
+                setFetching(false); // Set fetching status to false when fetching is complete
             }
         };
 
         fetchStressData();
-    }, [week]);
+    }, []);
 
-    if (loading) {
+    if (fetching || loading) { // Render a loading indicator while fetching or loading data
         return (
             <View>
                 <ActivityIndicator size="large" />
@@ -58,22 +58,21 @@ const StressChart = ({ week }) => {
         );
     }
 
-    const trend = calculateTrend(stressData);
-    const currentStressLevel = stressData[stressData.length - 1]?.stressLevel;
     function calculateTrend(data) {
-        if (data.length < 2) {
-            return { text: 'Not enough data to determine the trend', color: '#999' };
-        }
+        if (data) {
 
-        const latestStressLevel = data[data.length - 1].stressLevel;
-        const previousStressLevel = data[data.length - 2].stressLevel;
+            const latestStressLevel = data[data.length - 1].stressLevel;
+            const previousStressLevel = data[data.length - 2].stressLevel;
 
-        if (latestStressLevel > previousStressLevel) {
-            return { text: 'Stress level is increasing', color: '#FF5722' };
-        } else if (latestStressLevel < previousStressLevel) {
-            return { text: 'Stress level is decreasing', color: '#4CAF50' };
+            if (latestStressLevel > previousStressLevel) {
+                return { text: 'Stress level is increasing', color: '#FF5722' };
+            } else if (latestStressLevel < previousStressLevel) {
+                return { text: 'Stress level is decreasing', color: '#4CAF50' };
+            } else {
+                return { text: 'Stress level is stable', color: '#999' };
+            }
         } else {
-            return { text: 'Stress level is stable', color: '#999' };
+            return { text: 'Not enough data to determine the trend', color: '#999' };
         }
     }
 
@@ -93,34 +92,36 @@ const StressChart = ({ week }) => {
     }
 
     return (
-        <View>
-            <Text>This graph show your stress level over the past week.</Text>
-            <Text style={{ color: trend.color }}>{trend.text}</Text>
-            <Text>{getTips(currentStressLevel)}</Text>
-            <LineChart
-                data={{
-                    labels: stressData.map((item) => item.date),
-                    datasets: [
-                        {
-                            data: stressData.map((item) => item.value),
+        <ScrollView>
+            {stressData && <View>
+                <Text>This graph show your stress level over the past week.</Text>
+                <Text><Text style={{ color: calculateTrend(stressData).color }}>{calculateTrend(stressData).text}</Text></Text>
+                <Text>{getTips(0)}</Text>
+                <LineChart
+                    data={{
+                        labels: stressData.map((item) => item.date),
+                        datasets: [
+                            {
+                                data: stressData.map((item) => item.value),
+                            },
+                        ],
+                    }}
+                    width={400}
+                    height={220}
+                    chartConfig={{
+                        backgroundColor: '#ffffff',
+                        backgroundGradientFrom: '#ffffff',
+                        backgroundGradientTo: '#ffffff',
+                        decimalPlaces: 0,
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        style: {
+                            borderRadius: 16,
                         },
-                    ],
-                }}
-                width={400}
-                height={220}
-                chartConfig={{
-                    backgroundColor: '#ffffff',
-                    backgroundGradientFrom: '#ffffff',
-                    backgroundGradientTo: '#ffffff',
-                    decimalPlaces: 0,
-                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    style: {
-                        borderRadius: 16,
-                    },
-                }}
-                bezier
-            />
-        </View>
+                    }}
+                    bezier
+                />
+            </View>}
+        </ScrollView>
     );
 };
 

@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, FlatList, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, FlatList, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { LineChart, BarChart } from 'react-native-chart-kit';
-import { Card, List } from 'react-native-paper';
+import { Card, List, Title, Button } from 'react-native-paper';
 import { MaterialListItemDTO } from '../../common/dto';
 
 const DashboardScreen = ({ navigation }) => {
@@ -93,23 +93,46 @@ const DashboardScreen = ({ navigation }) => {
         >
             <Card>
                 <Card.Content>
-                    <Text style={styles.recommendedMaterialTitle}>{item.name}</Text>
-                    <Text style={styles.recommendedMaterialDescription}>{item.shortDescription}</Text>
+                    <Card.Title
+                        title={item.name}
+                        subtitle={item.shortDescription}
+                    />
                 </Card.Content>
             </Card>
         </TouchableOpacity>
     );
 
     const handleMaterialPress = (materialId) => {
-        console.log('Material pressed:', materialId);
+        navigation.navigate('Material Detail', { materialId });
     };
 
     const handleViewAllMaterials = () => {
         navigation.navigate('MaterialList');
     };
 
+    const handleNavigateStressManagement = () => {
+        navigation.navigate('Stress Management');
+    };
+
     return (
         <ScrollView style={styles.container}>
+            <View>
+                <Card>
+                    <Card.Title
+                        title="How was your day" />
+                    <Card.Content>
+                        <Text>Rate your stress level here</Text>
+                    </Card.Content>
+                    <Card.Actions>
+                        <Button
+                            icon="camera"
+                            mode="contained"
+                            onPress={handleNavigateStressManagement}>
+                            Explore
+                        </Button>
+                    </Card.Actions>
+                </Card>
+            </View>
             {hrvData ? (
                 <View style={styles.hrvDataContainer}>
                     <Text style={styles.hrvDataTitle}>HRV Information:</Text>
@@ -178,7 +201,6 @@ const DashboardScreen = ({ navigation }) => {
                         <Picker
                             selectedValue={selectedPreference}
                             onValueChange={(itemValue) => {
-                                console.log('Selected preference:', itemValue);
                                 setSelectedPreference(itemValue)
                             }}
                             style={styles.preferencePicker}
@@ -210,6 +232,12 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
         backgroundColor: '#ffffff',
+    },
+    stressContainer: {
+        padding: 10,
+    },
+    stressButton: {
+        borderRadius: 8,
     },
     title: {
         fontSize: 24,
