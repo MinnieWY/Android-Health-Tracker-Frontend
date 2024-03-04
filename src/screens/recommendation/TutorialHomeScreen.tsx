@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Button, ScrollView, ImageBackground } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { Card } from 'react-native-paper';
+import { Card, Title } from 'react-native-paper';
 import { MaterialListItemDTO } from '../../common/dto';
 
 const TutorialHomeScreen = ({ navigation }) => {
@@ -122,10 +122,14 @@ const TutorialHomeScreen = ({ navigation }) => {
 
 
             <Card>
-
-                <Card.Content>
-                    <Text style={styles.title}>Tutorial Home Screen</Text>
-                </Card.Content>
+                <TouchableOpacity onPress={() => navigation.navigate('BreathingIntro')}>
+                    <ImageBackground source={require('../../assets/breath_banner.jpg')} style={styles.cardCover}>
+                        <Card.Content>
+                            <Title>Breathing Exercise</Title>
+                            <Text>Take a moment to focus on your breathing</Text>
+                        </Card.Content>
+                    </ImageBackground>
+                </TouchableOpacity>
             </Card>
         </ScrollView >
     );
@@ -188,6 +192,10 @@ const styles = StyleSheet.create({
     },
     recommendedMaterialDescription: {
         fontSize: 14,
+    },
+    cardCover: {
+        height: 200,
+        justifyContent: 'flex-end',
     },
 });
 

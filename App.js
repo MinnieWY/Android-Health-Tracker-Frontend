@@ -10,6 +10,8 @@ import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import TutorialHomeScreen from './src/screens/recommendation/TutorialHomeScreen';
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
 import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
+import BreathingInro from './src/screens/recommendation/BreathingIntro';
+import BreathingExercise from './src/screens/recommendation/BreathingExercise';
 import ProfileScreen from './src/screens/profile/ProfileScreen';
 import EditPersonalInfoScreen from './src/screens/profile/EditPersonalInfoScreen';
 import AboutUsScreen from './src/screens/profile/AboutUsScreen';
@@ -64,6 +66,8 @@ function Tutorial() {
       <Stack.Screen name="TutorialHome" component={TutorialHomeScreen} />
       <Stack.Screen name="MaterialList" component={MaterialListScreen} />
       <Stack.Screen name="MaterialDetail" component={MaterialDetailScreen} />
+      <Stack.Screen name="BreathingIntro" component={BreathingInro} />
+      <Stack.Screen name="BreathingExercise" component={BreathingExercise} />
     </Stack.Navigator>
   );
 }
