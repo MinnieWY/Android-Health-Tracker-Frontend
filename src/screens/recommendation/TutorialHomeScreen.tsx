@@ -119,6 +119,14 @@ const TutorialHomeScreen = ({ navigation }) => {
             <TouchableOpacity onPress={handleViewAllMaterials}>
                 <Text>Check all avaiable materials</Text>
             </TouchableOpacity>
+
+
+            <Card>
+
+                <Card.Content>
+                    <Text style={styles.title}>Tutorial Home Screen</Text>
+                </Card.Content>
+            </Card>
         </ScrollView >
     );
 };
