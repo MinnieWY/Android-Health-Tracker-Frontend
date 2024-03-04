@@ -9,7 +9,7 @@ import Registration from './src/screens/login/Registration';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
 import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
-import Profile from './src/screens/profile/Profile';
+import Profile from './src/screens/profile/ProfileScreen';
 import Community from './src/screens/community/Community';
 import { View, Image, Dimensions } from 'react-native';
 import { Provider } from 'react-redux';
@@ -49,10 +49,28 @@ function Dashboard() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function Tutorial() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="TutorialHome" component={TutorialScreen} />
       <Stack.Screen name="MaterialList" component={MaterialListScreen} />
       <Stack.Screen name="MaterialDetail" component={MaterialDetailScreen} />
     </Stack.Navigator>
   );
+}
+
+function Profile() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="ProfileScreen" component={Profile} />
+      <Stack.Screen name="Community" component={Community} />
+    </Stack.Navigator>
+  );
+
 }
 
 const AuthenticatedStack = () => {
@@ -64,7 +82,7 @@ const AuthenticatedStack = () => {
 
           if (route.name === 'Dashboard') {
             iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Community') {
+          } else if (route.name === 'Tutorial') {
             iconName = focused ? 'game-controller' : 'game-controller-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
@@ -76,8 +94,8 @@ const AuthenticatedStack = () => {
       })}
     >
       <Tab.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
-      <Tab.Screen name="Community" component={Community} />
-      <Tab.Screen name="Profile" component={Profile} />
+      <Tab.Screen name="Tutorial" component={Tutorial} options={{ headerShown: false }} />
+      <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 };
