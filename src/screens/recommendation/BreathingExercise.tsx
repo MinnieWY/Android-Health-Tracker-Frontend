@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Button } from 'react-native-paper';
 
 const BreathingExercise = () => {
@@ -9,6 +9,7 @@ const BreathingExercise = () => {
     const [rounds, setRounds] = useState(1);
     const [currentRound, setCurrentRound] = useState(1);
     const [isRoundsCompleted, setIsRoundsCompleted] = useState(false);
+    const [showModal, setShowModal] = useState(true);
 
     useEffect(() => {
         let intervalId;
@@ -28,17 +29,7 @@ const BreathingExercise = () => {
         setBackgroundColor('#FFFFFF');
         setCurrentRound(1);
         setIsRoundsCompleted(false);
-    };
-
-    const stopExercise = () => {
-        setIsRunning(false);
-    };
-
-    const resetExercise = () => {
-        setCounter(0);
-        setBackgroundColor('#FFFFFF');
-        setCurrentRound(1);
-        setIsRoundsCompleted(false);
+        setShowModal(false);
     };
 
     const formatTime = (seconds) => {
@@ -72,13 +63,67 @@ const BreathingExercise = () => {
         setIsRoundsCompleted(false);
     };
 
+    const handleRoundSelection = (selectedRounds) => {
+        setRounds(selectedRounds);
+        setShowModal(false);
+    };
+
+    const getInstructionsText = (isRunning, isCompleted, counter) => {
+        if (!isRunning && !isCompleted) {
+            return 'Click on the "Start" button to begin the breathing exercise';
+        } else if (isRunning) {
+            if (counter < 4) {
+                return 'Take a deep breath in';
+            } else if (counter < 11) {
+                return 'Hold your breath';
+            } else {
+                // counter < 18
+                return 'Release your breath slowly';
+            }
+        } else {
+            // Should evaluate to isCompleted
+            return 'Congrualtion! You have completed the breathing exercise';
+        }
+    };
+
     return (
         <View style={[styles.container, { backgroundColor }]}>
-            <Text style={styles.instructionText}>
-                Follow the 4-7-8 breathing exercise:
-            </Text>
+            <Modal visible={showModal} animationType="fade" transparent>
+                <View style={styles.modalContainer}>
+                    <Text style={styles.modalTitle}>Select Number of Rounds</Text>
+                    <View style={styles.roundsContainer}>
+                        <TouchableOpacity
+                            style={styles.roundButton}
+                            onPress={() => handleRoundSelection(1)}
+                        >
+                            <Text style={styles.roundButtonText}>1 (Have a taste)</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.roundButton}
+                            onPress={() => handleRoundSelection(3)}
+                        >
+                            <Text style={styles.roundButtonText}>3 (Short exercise)</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.roundsContainer}>
+                        <TouchableOpacity
+                            style={styles.roundButton}
+                            onPress={() => handleRoundSelection(5)}
+                        >
+                            <Text style={styles.roundButtonText}>5</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.roundButton}
+                            onPress={() => handleRoundSelection(10)}
+                        >
+                            <Text style={styles.roundButtonText}>10</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+            <Text style={styles.instructionText}>{getInstructionsText(isRunning, isRoundsCompleted, counter)}</Text>
             <Text style={styles.counterText}>{formatTime(counter)}</Text>
-            {!isRunning ? (
+            {!isRunning && (
                 <Button
                     mode="contained"
                     onPress={startExercise}
@@ -87,48 +132,25 @@ const BreathingExercise = () => {
                 >
                     Start
                 </Button>
-            ) : (
-                <Button
-                    mode="contained"
-                    onPress={stopExercise}
-                    style={styles.button}
-                    labelStyle={styles.buttonText}
-                >
-                    Stop
-                </Button>
             )}
-            <Button
-                mode="outlined"
-                onPress={resetExercise}
-                style={styles.button}
-                labelStyle={styles.buttonText}
-            >
-                Reset
-            </Button>
-            <Text style={styles.roundsText}>
-                Rounds: {currentRound} / {rounds}
-            </Text>
-            {counter === 4 && (
-                <Text style={styles.instructionText}>Hold your breath</Text>
+            {isRunning && (
+                <Text style={styles.roundsText}>
+                    Rounds: {currentRound} / {rounds}
+                </Text>
             )}
-            {counter === 11 && (
-                <Text style={styles.instructionText}>Release your breath</Text>
-            )}
-            {isRoundsCompleted ? (
+            {isRoundsCompleted && (
                 <View>
-                    <Text style={styles.instructionText}>
-                        Congratulation! You have completed {rounds} rounds of deep breathing
-                    </Text>
                     <Button
                         mode="contained"
                         onPress={continueExercise}
                         style={styles.button}
                         labelStyle={styles.buttonText}
                     >
-                        Continue
+                        Start a new set of exercise
                     </Button>
                 </View>
-            ) : (
+            )}
+            {isRunning && (
                 counter === 18 && (
                     <Text style={styles.instructionText}>
                         {rounds - currentRound} more rounds to go
@@ -166,6 +188,33 @@ const styles = StyleSheet.create({
     roundsText: {
         fontSize: 16,
         marginBottom: 10,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        color: '#FFFFFF',
+    },
+    roundsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginBottom: 10,
+    },
+    roundButton: {
+        backgroundColor: '#FFFFFF',
+        padding: 10,
+        borderRadius: 5,
+        marginBottom: 10,
+    },
+    roundButtonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
 
