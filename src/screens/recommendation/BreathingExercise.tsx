@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Button } from 'react-native-paper';
 
 const BreathingExercise = () => {
@@ -9,7 +9,7 @@ const BreathingExercise = () => {
     const [rounds, setRounds] = useState(1);
     const [currentRound, setCurrentRound] = useState(1);
     const [isRoundsCompleted, setIsRoundsCompleted] = useState(false);
-    const [showModal, setShowModal] = useState(true);
+
 
     useEffect(() => {
         let intervalId;
@@ -29,14 +29,11 @@ const BreathingExercise = () => {
         setBackgroundColor('#FFFFFF');
         setCurrentRound(1);
         setIsRoundsCompleted(false);
-        setShowModal(false);
     };
 
     const formatTime = (seconds) => {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-
-        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        const remainingSeconds = seconds % 18;
+        return `${remainingSeconds.toString().padStart(2, '0')}`;
     };
 
     useEffect(() => {
@@ -58,14 +55,8 @@ const BreathingExercise = () => {
         }
     }, [counter, currentRound, rounds]);
 
-    const continueExercise = () => {
-        setCurrentRound((prevRound) => prevRound + 1);
-        setIsRoundsCompleted(false);
-    };
-
-    const handleRoundSelection = (selectedRounds) => {
+    const handleRoundSelection = (selectedRounds: number) => {
         setRounds(selectedRounds);
-        setShowModal(false);
     };
 
     const getInstructionsText = (isRunning, isCompleted, counter) => {
@@ -73,56 +64,55 @@ const BreathingExercise = () => {
             return 'Click on the "Start" button to begin the breathing exercise';
         } else if (isRunning) {
             if (counter < 4) {
-                return 'Take a deep breath in';
+                return `Take a deep breath in ${18 - counter}`;
             } else if (counter < 11) {
-                return 'Hold your breath';
+                return `Hold your breath in ${11 - (counter - 4)}`;
             } else {
                 // counter < 18
-                return 'Release your breath slowly';
+                return `Release your breath slowly in ${18 - (counter - 11)}`;
             }
         } else {
-            // Should evaluate to isCompleted
-            return 'Congrualtion! You have completed the breathing exercise';
+            return 'Congratulations! You have completed the breathing exercise';
         }
     };
 
     return (
         <View style={[styles.container, { backgroundColor }]}>
-            <Modal visible={showModal} animationType="fade" transparent>
-                <View style={styles.modalContainer}>
+            {!isRunning && !isRoundsCompleted && (
+                <View>
                     <Text style={styles.modalTitle}>Select Number of Rounds</Text>
                     <View style={styles.roundsContainer}>
                         <TouchableOpacity
                             style={styles.roundButton}
-                            onPress={() => handleRoundSelection(1)}
-                        >
-                            <Text style={styles.roundButtonText}>1 (Have a taste)</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.roundButton}
                             onPress={() => handleRoundSelection(3)}
                         >
-                            <Text style={styles.roundButtonText}>3 (Short exercise)</Text>
+                            <Text style={styles.roundButtonText}>3</Text>
                         </TouchableOpacity>
-                    </View>
-                    <View style={styles.roundsContainer}>
                         <TouchableOpacity
                             style={styles.roundButton}
                             onPress={() => handleRoundSelection(5)}
                         >
                             <Text style={styles.roundButtonText}>5</Text>
                         </TouchableOpacity>
+                    </View>
+                    <View style={styles.roundsContainer}>
                         <TouchableOpacity
                             style={styles.roundButton}
                             onPress={() => handleRoundSelection(10)}
                         >
                             <Text style={styles.roundButtonText}>10</Text>
                         </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.roundButton}
+                            onPress={() => handleRoundSelection(20)}
+                        >
+                            <Text style={styles.roundButtonText}>20</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
-            </Modal>
+            )}
             <Text style={styles.instructionText}>{getInstructionsText(isRunning, isRoundsCompleted, counter)}</Text>
-            <Text style={styles.counterText}>{formatTime(counter)}</Text>
+
             {!isRunning && (
                 <Button
                     mode="contained"
@@ -133,29 +123,17 @@ const BreathingExercise = () => {
                     Start
                 </Button>
             )}
-            {isRunning && (
-                <Text style={styles.roundsText}>
-                    Rounds: {currentRound} / {rounds}
-                </Text>
-            )}
-            {isRoundsCompleted && (
+            {isRunning && !isRoundsCompleted && (
                 <View>
-                    <Button
-                        mode="contained"
-                        onPress={continueExercise}
-                        style={styles.button}
-                        labelStyle={styles.buttonText}
-                    >
-                        Start a new set of exercise
-                    </Button>
-                </View>
-            )}
-            {isRunning && (
-                counter === 18 && (
-                    <Text style={styles.instructionText}>
-                        {rounds - currentRound} more rounds to go
+                    <Text style={styles.roundsText}>
+                        Rounds: {currentRound} / {rounds}
                     </Text>
-                )
+                    {(currentRound / rounds) > 0.5 && (
+                        <Text style={styles.instructionText}>
+                            {rounds - currentRound} more rounds to go
+                        </Text>
+                    )}
+                </View>
             )}
         </View>
     );
@@ -189,17 +167,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 10,
     },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
     modalTitle: {
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#FFFFFF',
+        color: 'black',
     },
     roundsContainer: {
         flexDirection: 'row',
@@ -207,10 +179,12 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     roundButton: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'pink',
         padding: 10,
         borderRadius: 5,
         marginBottom: 10,
+        marginHorizontal: 10,
+        marginVertical: 10,
     },
     roundButtonText: {
         fontSize: 16,
