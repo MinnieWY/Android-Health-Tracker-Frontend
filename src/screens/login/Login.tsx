@@ -10,7 +10,7 @@ const Login = ({ navigation }) => {
     const { setIsLoggedIn } = useContext(AuthContext);
     const dispatch = useDispatch();
     const [username, setUsername] = useState('admin');
-    const [password, setPassword] = useState('a3423');
+    const [password, setPassword] = useState('P@ssw0rd');
     const [error, setError] = useState('');
 
     const handleLogin = async () => {
@@ -26,16 +26,13 @@ const Login = ({ navigation }) => {
                     password,
                 }),
             });
-            const data = await response.json();
+            const result = await response.json();
 
-            await AsyncStorage.setItem('userId', JSON.stringify(data.data.id));
-            await AsyncStorage.setItem('username', data.data.username);
+            const { data, metadata } = result as { data: UserDTO, metadata: any };
 
-            if (data.data.preference) {
-                await AsyncStorage.setItem('preference', data.preference);
-            }
+            await AsyncStorage.setItem('userId', JSON.stringify(data.id));
 
-            dispatch(loginSuccess()); // Dispatch the loginSuccess action upon successful login
+            dispatch(loginSuccess());
             setIsLoggedIn(true);
         } catch (error) {
             console.error('Error:', error);
