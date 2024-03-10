@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler'
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -11,6 +12,7 @@ import TutorialHomeScreen from './src/screens/recommendation/TutorialHomeScreen'
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
 import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
 import ProfileScreen from './src/screens/profile/ProfileScreen';
+import PersonalInfoScreen from './src/screens/profile/PersonalInfoScreen';
 import EditPersonalInfoScreen from './src/screens/profile/EditPersonalInfoScreen';
 import AboutUsScreen from './src/screens/profile/AboutUsScreen';
 import Community from './src/screens/community/Community';
@@ -71,10 +73,11 @@ function Tutorial() {
 function Profile() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Stack.Screen name="Profile Screen" component={ProfileScreen} />
       <Stack.Screen name="Community" component={Community} />
-      <Stack.Screen name="EditPersonalInfo" component={EditPersonalInfoScreen} />
-      <Stack.Screen name="AboutUS" component={AboutUsScreen} />
+      <Stack.Screen name="Personal Information" component={PersonalInfoScreen} />
+      <Stack.Screen name="Edit Personal Information" component={EditPersonalInfoScreen} />
+      <Stack.Screen name="About Us" component={AboutUsScreen} />
     </Stack.Navigator>
   );
 
