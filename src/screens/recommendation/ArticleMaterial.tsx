@@ -1,10 +1,9 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { Card, Headline, Paragraph, Title } from "react-native-paper";
-import Clipboard from '@react-native-clipboard/clipboard';
 
 const ArticleMaterial = ({ material }) => {
     const copyToClipboard = () => {
-        Clipboard.setString(material.url);
+
     };
 
     return (

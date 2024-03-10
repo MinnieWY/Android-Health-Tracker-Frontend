@@ -6,7 +6,7 @@ import { TextInput, Button, RadioButton } from 'react-native-paper';
 import RNPickerSelect from 'react-native-picker-select';
 
 const EditPersonalInfoScreen = ({ navigation, route }) => {
-    const { username, email, age, height, weight, gender, preference } = route.params.userData;
+    const { username, email, age, height, weight, gender, preference } = route.params.userInfo;
     const [updatedUsername, setUpdatedUsername] = useState(username);
     const [updatedEmail, setUpdatedEmail] = useState(email);
     const [updatedAge, setUpdatedAge] = useState(age);
@@ -90,7 +90,7 @@ const EditPersonalInfoScreen = ({ navigation, route }) => {
 
         try {
             const userId = await AsyncStorage.getItem('userId');
-            const response = await fetch(`http://192.168.0.159:8080/updateProfile/${userId}`, {
+            const response = await fetch(`http://192.168.0.159:8080/editUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -114,8 +114,7 @@ const EditPersonalInfoScreen = ({ navigation, route }) => {
     };
 
     return (
-        <ScrollView>
-            <Text style={styles.title}>Edit Profile</Text>
+        <ScrollView style={styles.container} >
             <View>
                 <TextInput
                     label="Username"
@@ -140,12 +139,12 @@ const EditPersonalInfoScreen = ({ navigation, route }) => {
                     <Text>Gender:</Text>
                     <RadioButton.Group onValueChange={(value) => setUpdatedGender(value)} value={updatedGender}>
                         <View style={styles.radioOption}>
-                            <Text>Female</Text>
                             <RadioButton value="female" />
+                            <Text>Female</Text>
                         </View>
                         <View style={styles.radioOption}>
-                            <Text>Male</Text>
                             <RadioButton value="male" />
+                            <Text>Male</Text>
                         </View>
                     </RadioButton.Group>
                 </View>
@@ -157,6 +156,7 @@ const EditPersonalInfoScreen = ({ navigation, route }) => {
                     keyboardType="number-pad"
                     style={styles.input}
                 />
+                {ageError !== '' && <Text style={styles.errorText}>{ageError}</Text>}
                 <TextInput
                     label="Height (cm)"
                     value={updatedHeight}
@@ -165,6 +165,7 @@ const EditPersonalInfoScreen = ({ navigation, route }) => {
                     keyboardType="decimal-pad"
                     style={styles.input}
                 />
+                {heightError !== '' && <Text style={styles.errorText}>{heightError}</Text>}
                 <TextInput
                     label="Weight (kg)"
                     value={updatedWeight}
@@ -173,7 +174,9 @@ const EditPersonalInfoScreen = ({ navigation, route }) => {
                     keyboardType="decimal-pad"
                     style={styles.input}
                 />
+                {weightError !== '' && <Text style={styles.errorText}>{weightError}</Text>}
             </View>
+            <Text>Preference:</Text>
             <View>
                 <RNPickerSelect
                     value={updatedPreference}
@@ -191,10 +194,8 @@ const EditPersonalInfoScreen = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
+    container: {
+        padding: 20,
     },
     input: {
         marginBottom: 20,
@@ -224,7 +225,7 @@ const pickerSelectStyles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 10,
         borderWidth: 1,
-        borderColor: 'gray',
+        borderColor: 'black',
         borderRadius: 4,
         color: 'black',
         paddingRight: 30,
@@ -234,7 +235,7 @@ const pickerSelectStyles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 8,
         borderWidth: 0.5,
-        borderColor: 'gray',
+        borderColor: 'black',
         borderRadius: 8,
         color: 'black',
         paddingRight: 30,

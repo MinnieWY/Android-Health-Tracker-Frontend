@@ -15,7 +15,9 @@ const PersonalInfoScreen = ({ navigation }) => {
                 const response = await fetch(
                     `http://192.168.0.159:8080/userInfo/${userId}`
                 );
-                const data: UserInfoDTO = await response.json();
+                const result = await response.json();
+
+                const { data, metadata } = result as { data: UserInfoDTO, metadata: any };
                 setUserInfo(data);
             } catch (error) {
                 console.error("Error fetching user information:", error);
@@ -25,19 +27,13 @@ const PersonalInfoScreen = ({ navigation }) => {
     }, []);
 
     const handleEditProfile = () => {
-        navigation.navigate("EditPersonalInfo", {
+        navigation.navigate("Edit Personal Information", {
             userInfo
         });
     };
 
     return (
-        <View>
-            <IconButton
-                icon="pencil"
-                onPress={handleEditProfile}
-                style={{ position: 'absolute', top: 10, right: 10 }}
-            />
-            <Text style={styles.title}>Personal Info</Text>
+        <View style={styles.container}>
             {userInfo && (
                 <ScrollView>
                     <View style={styles.section}>
@@ -76,11 +72,19 @@ const PersonalInfoScreen = ({ navigation }) => {
                     </View>
                 </ScrollView>
             )}
+            <IconButton
+                icon="pencil"
+                onPress={handleEditProfile}
+                style={{ position: 'absolute', top: 10, right: 10 }}
+            />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+    },
     title: {
         fontSize: 24,
         fontWeight: "bold",
