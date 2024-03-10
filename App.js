@@ -9,7 +9,8 @@ import Registration from './src/screens/login/Registration';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
 import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
-import Profile from './src/screens/profile/ProfileScreen';
+import ProfileScreen from './src/screens/profile/ProfileScreen';
+import PersonalInfoScreen from './src/screens/profile/PersonalInfoScreen';
 import EditPersonalInfoScreen from './src/screens/profile/EditPersonalInfoScreen';
 import AboutUsScreen from './src/screens/profile/AboutUsScreen';
 import Community from './src/screens/community/Community';
@@ -70,8 +71,9 @@ function Tutorial() {
 function Profile() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="ProfileScreen" component={Profile} />
+      <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
       <Stack.Screen name="Community" component={Community} />
+      <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
       <Stack.Screen name="EditPersonalInfo" component={EditPersonalInfoScreen} />
       <Stack.Screen name="AboutUS" component={AboutUsScreen} />
     </Stack.Navigator>
