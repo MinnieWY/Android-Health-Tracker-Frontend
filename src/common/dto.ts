@@ -14,6 +14,17 @@ export interface UserDTO {
     preference: string;
 }
 
+export interface UserInfoDTO {
+    id?: string;
+    username: string;
+    email: string;
+    preference: string;
+    height: number;
+    weight: number;
+    age: number;
+    gender: string;
+}
+
 export interface MaterialListItemDTO {
     id?: string;
     name: string;

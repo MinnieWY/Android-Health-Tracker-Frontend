@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler'
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -5,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Login from './src/screens/login/Login';
 import ForgetPassword from './src/screens/login/ForgetPassword';
-import Registration from './src/screens/login/Registration';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import TutorialHomeScreen from './src/screens/recommendation/TutorialHomeScreen';
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
@@ -13,6 +13,7 @@ import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScr
 import BreathingInro from './src/screens/recommendation/BreathingIntro';
 import BreathingExercise from './src/screens/recommendation/BreathingExercise';
 import ProfileScreen from './src/screens/profile/ProfileScreen';
+import PersonalInfoScreen from './src/screens/profile/PersonalInfoScreen';
 import EditPersonalInfoScreen from './src/screens/profile/EditPersonalInfoScreen';
 import AboutUsScreen from './src/screens/profile/AboutUsScreen';
 import Community from './src/screens/community/Community';
@@ -47,7 +48,6 @@ function AuthStack() {
     <Stack.Navigator>
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
-      <Stack.Screen name="Registration" component={Registration} />
     </Stack.Navigator>
   );
 }
@@ -75,10 +75,11 @@ function Tutorial() {
 function Profile() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Stack.Screen name="Profile Screen" component={ProfileScreen} />
       <Stack.Screen name="Community" component={Community} />
-      <Stack.Screen name="EditPersonalInfo" component={EditPersonalInfoScreen} />
-      <Stack.Screen name="AboutUS" component={AboutUsScreen} />
+      <Stack.Screen name="Personal Information" component={PersonalInfoScreen} />
+      <Stack.Screen name="Edit Personal Information" component={EditPersonalInfoScreen} />
+      <Stack.Screen name="About Us" component={AboutUsScreen} />
     </Stack.Navigator>
   );
 
