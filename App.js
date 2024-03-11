@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Login from './src/screens/login/Login';
 import ForgetPassword from './src/screens/login/ForgetPassword';
-import Registration from './src/screens/login/Registration';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import TutorialHomeScreen from './src/screens/recommendation/TutorialHomeScreen';
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
@@ -47,7 +46,6 @@ function AuthStack() {
     <Stack.Navigator>
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
-      <Stack.Screen name="Registration" component={Registration} />
     </Stack.Navigator>
   );
 }
