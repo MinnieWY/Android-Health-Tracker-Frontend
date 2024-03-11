@@ -1,10 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView, ImageBackground, Dimensions } from 'react-native';
 import { Card } from 'react-native-paper';
 import { MaterialListItemDTO } from '../../common/dto';
 
 const TutorialHomeScreen = ({ navigation }) => {
+    const windowWidth = Dimensions.get('window').width;
+    const cardWidth = windowWidth * 0.5;
+
     const [recommendedMaterials, setRecommendedMaterials] = useState([]);
     const [hightlightMaterials, setHightlightMaterials] = useState([]);
 
@@ -50,11 +53,11 @@ const TutorialHomeScreen = ({ navigation }) => {
         <TouchableOpacity
             key={item.id}
             onPress={() => handleMaterialPress(item.id)}
+            style={styles.recommendedMaterialItem}
         >
-            <Card>
+            <Card style={[styles.card, { width: cardWidth }]}>
                 <Card.Content>
                     <Text style={styles.recommendedMaterialTitle}>{item.name}</Text>
-                    <Text style={styles.recommendedMaterialDescription}>{item.shortDescription}</Text>
                 </Card.Content>
             </Card>
         </TouchableOpacity>
@@ -69,8 +72,8 @@ const TutorialHomeScreen = ({ navigation }) => {
     };
 
     return (
-        <ScrollView>
-            < View >
+        <ScrollView style={styles.container}>
+            <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}>Exclusive For You</Text>
                 <FlatList
                     horizontal
@@ -79,7 +82,7 @@ const TutorialHomeScreen = ({ navigation }) => {
                     keyExtractor={(item) => item.id.toString()}
                 />
             </View>
-            <View>
+            <View style={styles.sectionContainer}>
                 <View style={styles.titleContainer}>
                     <Text style={styles.sectionTitle}>Editor's Pick</Text>
                     <TouchableOpacity onPress={handleViewAllMaterials}>
@@ -93,22 +96,20 @@ const TutorialHomeScreen = ({ navigation }) => {
                     keyExtractor={(item) => item.id.toString()}
                 />
             </View>
-            <TouchableOpacity onPress={handleViewAllMaterials}>
-                <Text>Check all avaiable materials</Text>
-            </TouchableOpacity>
 
-
-            <Card>
-                <Card.Title title="Breathing Exercise" />
-                <TouchableOpacity onPress={() => navigation.navigate('BreathingIntro')}>
-                    <ImageBackground source={require('../../assets/breath_banner.jpg')} style={styles.cardCover}>
-                        <Card.Content>
-                            <Text>Take a moment to focus on your breathing</Text>
-                        </Card.Content>
-                    </ImageBackground>
-                </TouchableOpacity>
-            </Card>
-        </ScrollView >
+            <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}>Breathing Exercuse</Text>
+                <Card>
+                    <TouchableOpacity onPress={() => navigation.navigate('What is Breathing Exercise?')}>
+                        <ImageBackground source={require('../../assets/breath_banner.jpg')} style={styles.cardCover}>
+                            <Card.Content>
+                                <Text>Take a moment to focus on your breathing</Text>
+                            </Card.Content>
+                        </ImageBackground>
+                    </TouchableOpacity>
+                </Card>
+            </View>
+        </ScrollView>
     );
 };
 
@@ -127,6 +128,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#f3f3f3',
         padding: 10,
         borderRadius: 8,
+        marginBottom: 16,
+    },
+    sectionContainer: {
         marginBottom: 16,
     },
     sectionTitle: {
@@ -160,7 +164,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     recommendedMaterialItem: {
-        marginBottom: 8,
+        marginRight: 10,
     },
     recommendedMaterialTitle: {
         fontSize: 16,
@@ -184,6 +188,10 @@ const styles = StyleSheet.create({
     cardCover: {
         height: 200,
         justifyContent: 'flex-end',
+    },
+    card: {
+        height: 100,
+        marginBottom: 10,
     },
 });
 

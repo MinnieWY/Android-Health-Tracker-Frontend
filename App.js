@@ -64,10 +64,10 @@ function Tutorial() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="TutorialHome" component={TutorialHomeScreen} />
-      <Stack.Screen name="MaterialList" component={MaterialListScreen} />
-      <Stack.Screen name="MaterialDetail" component={MaterialDetailScreen} />
-      <Stack.Screen name="BreathingIntro" component={BreathingInro} />
-      <Stack.Screen name="BreathingExercise" component={BreathingExercise} />
+      <Stack.Screen name="Available Materials" component={MaterialListScreen} />
+      <Stack.Screen name="Materials" component={MaterialDetailScreen} />
+      <Stack.Screen name="What is Breathing Exercise?" component={BreathingInro} />
+      <Stack.Screen name="BreathingExercise" component={BreathingExercise} headerShown={false} />
     </Stack.Navigator>
   );
 }
