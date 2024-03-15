@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, FlatList, Text, StyleSheet } from 'react-native';
-import { UserSearchResultDTO } from '../../common/dto';
-import { Searchbar } from 'react-native-paper';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { Searchbar, useTheme } from 'react-native-paper';
 
 const CommunitySearch = () => {
+    const theme = useTheme();
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<UserSearchResultDTO[]>([]);
+    const [searchResults, setSearchResults] = useState([]);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
@@ -18,7 +18,7 @@ const CommunitySearch = () => {
     const handleSearch = () => {
         fetch(`http://192.168.0.159:8080/search?query=${searchQuery}`)
             .then((response) => response.json())
-            .then((data: UserSearchResultDTO[]) => {
+            .then((data) => {
                 setSearchResults(data);
                 console.log("searched", searchResults);
             })
@@ -26,7 +26,7 @@ const CommunitySearch = () => {
                 console.error(error);
             });
     };
-    console.log("length", searchResults.length);
+
     const renderListItem = ({ item }) => (
         <View style={styles.resultItem}>
             <Text>{item.name}</Text>
@@ -35,12 +35,13 @@ const CommunitySearch = () => {
     );
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
             <Searchbar
-                placeholder="Search for friends and family"
+                placeholder="Search for users"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 style={styles.searchBar}
+                theme={theme}
             />
             {searchResults.length === 0 && searchQuery.trim() !== '' ?
                 <Text>No results found. Please refine your search query.</Text>
@@ -53,6 +54,7 @@ const CommunitySearch = () => {
         </View>
     );
 };
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
