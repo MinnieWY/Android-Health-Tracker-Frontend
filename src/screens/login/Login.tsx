@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { TextInput, Button } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../redux/actions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -28,44 +29,52 @@ const Login = ({ navigation }) => {
             });
             const result = await response.json();
 
-            const { data, metadata } = result as { data: UserDTO, metadata: any };
-
-            await AsyncStorage.setItem('userId', JSON.stringify(data.id));
-
-            dispatch(loginSuccess());
-            setIsLoggedIn(true);
+            if (result.error) {
+                switch (result.error) {
+                    case 'ERR_PASSWORD_MISMATCHED':
+                        setError('Username does not match with password');
+                        break;
+                    default:
+                        console.error('Unexpected error:', result.error);
+                        setError('Server error');
+                }
+            } else {
+                const { data } = result as { data: UserDTO };
+                await AsyncStorage.setItem('userId', JSON.stringify(data.id));
+                dispatch(loginSuccess());
+                setIsLoggedIn(true);
+            }
         } catch (error) {
-            console.error('Error:', error);
-            setError('An unexpected error occurred');
+            console.error('Not catched error in Frontend:', error);
+            setError('Server error');
         }
     };
 
     const handleForgotPassword = () => {
         navigation.navigate('ForgetPassword');
     };
-    const handleRegistration = () => {
-        navigation.navigate('Registration');
-    };
 
     return (
         <View style={styles.container}>
             <TextInput
+                label="Username"
                 style={styles.input}
-                placeholder="Username"
                 value={username}
                 onChangeText={setUsername}
+                mode="outlined"
             />
             <TextInput
+                label="Password"
                 style={styles.input}
                 placeholder="Password"
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
+                mode="outlined"
             />
             {error ? <Text style={styles.error}>{error}</Text> : null}
-            <Button title="Log In" onPress={handleLogin} />
-            <Button title="Forgot Password" onPress={handleForgotPassword} />
-            <Button title="Registration" onPress={handleRegistration} />
+            <Button onPress={handleLogin} style={styles.button} >Login</Button>
+            <Button onPress={handleForgotPassword} style={styles.button}>Forgot Password</Button>
         </View>
     );
 };
@@ -78,8 +87,6 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
-        borderColor: 'gray',
-        borderWidth: 1,
         marginBottom: 12,
         paddingHorizontal: 8,
     },
@@ -87,6 +94,12 @@ const styles = StyleSheet.create({
         color: 'red',
         marginBottom: 12,
     },
+    button: {
+        backgroundColor: 'pink',
+        borderRadius: 8,
+        marginBottom: 12,
+        paddingHorizontal: 24,
+    }
 });
 
 export default Login;

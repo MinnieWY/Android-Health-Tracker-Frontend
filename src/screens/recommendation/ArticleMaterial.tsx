@@ -1,25 +1,37 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import { Card, Headline, Paragraph, Title } from "react-native-paper";
+import { View, Text, StyleSheet } from "react-native";
+import { Card, Paragraph, Title } from "react-native-paper";
+import ChatBubble from 'react-native-chat-bubble';
 
 const ArticleMaterial = ({ material }) => {
-    const copyToClipboard = () => {
-        // Copy the material content to clipboard
-    };
 
     return (
         <View>
+            <ChatBubble
+                isOwnMessage={true}
+                bubbleColor='#1084ff'
+                tailColor='#1084ff'
+                withTail={true}
+                style={{ marginBottom: 10 }}
+            >
+                <Text>{material.shortDescription}</Text>
+            </ChatBubble>
             <Text>{material.content}</Text>
-            <Card>
+            <Card style={styles.infoBox}>
                 <Card.Content>
                     <Title>More about the {material.name}</Title>
                     <Paragraph>The above content is extracted from {material.url}</Paragraph>
-                    <TouchableOpacity onPress={copyToClipboard}>
-                        <Text>Click here to copy to Clipboard and know about it</Text>
-                    </TouchableOpacity>
+                    <Text>Search on the internet to know more about the topic</Text>
                 </Card.Content>
             </Card>
         </View>
     );
 };
 
+
+const styles = StyleSheet.create({
+    infoBox: {
+
+    },
+
+});
 export default ArticleMaterial;

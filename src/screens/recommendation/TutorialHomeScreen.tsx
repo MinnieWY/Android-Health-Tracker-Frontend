@@ -1,83 +1,70 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Button, ScrollView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView, ImageBackground, Dimensions } from 'react-native';
 import { Card } from 'react-native-paper';
 import { MaterialListItemDTO } from '../../common/dto';
 
 const TutorialHomeScreen = ({ navigation }) => {
+    const windowWidth = Dimensions.get('window').width;
+    const cardWidth = windowWidth * 0.5;
+
     const [recommendedMaterials, setRecommendedMaterials] = useState([]);
-    const [userPreference, setUserPreference] = useState(null);
-    const [selectedPreference, setSelectedPreference] = useState(null);
+    const [hightlightMaterials, setHightlightMaterials] = useState([]);
 
     useEffect(() => {
         const fetchRecommendedMaterials = async () => {
             try {
-                const preference = await AsyncStorage.getItem('userPreference');
                 const userId = await AsyncStorage.getItem('userId');
-                if (preference) {
-                    const preferenceResponse = await fetch(
-                        "http://192.168.0.159:8080/recommendation/recommended-materials", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            userId
-                        }),
-                    });
-                    const data = await preferenceResponse.json();
-                    const materialList: MaterialListItemDTO[] = data;
-                    setRecommendedMaterials(materialList);
-                } else {
-                    setUserPreference(null);
-                }
+                const response = await fetch(
+                    "http://192.168.0.159:8080/recommendation/recommended-materials", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId
+                    }),
+                });
+                const data = await response.json();
+                const materialList: MaterialListItemDTO[] = data;
+                setRecommendedMaterials(materialList);
             } catch (error) {
                 console.error('Error fetching recommended materials:', error);
             }
         };
 
-        if (userPreference != null) {
-            fetchRecommendedMaterials();
-        }
-    }, [userPreference]);
+        const fetchHightlightMaterials = async () => {
+            try {
+                const response = await fetch(
+                    "http://192.168.0.159:8080/recommendation/highlight");
+                const data = await response.json();
+                const materialList: MaterialListItemDTO[] = data;
+                setHightlightMaterials(materialList);
+            } catch (error) {
+                console.error('Error fetching hightlight materials:', error);
+            }
+        };
 
-    const handleUpdatePreference = async () => {
-        try {
-            const userId = await AsyncStorage.getItem('userId');
-            const response = await fetch('http://192.168.0.159:8080/recommendation/update-preference', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId,
-                    preference: selectedPreference
-                }),
-            });
-
-            setUserPreference(selectedPreference);
-        } catch (error) {
-            console.error('Error updating preference:', error);
-        }
-    };
+        fetchRecommendedMaterials();
+        fetchHightlightMaterials();
+    }, []);
 
     const renderRecommendedMaterialItem = ({ item }) => (
         <TouchableOpacity
             key={item.id}
             onPress={() => handleMaterialPress(item.id)}
+            style={styles.recommendedMaterialItem}
         >
-            <Card>
+            <Card style={[styles.card, { width: cardWidth }]}>
                 <Card.Content>
                     <Text style={styles.recommendedMaterialTitle}>{item.name}</Text>
-                    <Text style={styles.recommendedMaterialDescription}>{item.shortDescription}</Text>
                 </Card.Content>
             </Card>
         </TouchableOpacity>
     );
 
     const handleMaterialPress = (materialId) => {
-        console.log('Material pressed:', materialId);
+        navigation.navigate('MaterialDetail', { materialId });
     };
 
     const handleViewAllMaterials = () => {
@@ -85,41 +72,44 @@ const TutorialHomeScreen = ({ navigation }) => {
     };
 
     return (
-        <ScrollView>
-            < View >
-                <Text style={styles.sectionTitle}>Recommendations</Text>
-                {
-                    userPreference === null ? (
-                        <View style={styles.preferenceContainer}>
-                            <Text style={styles.preferenceLabel}>Select your preference:</Text>
-                            <Picker
-                                selectedValue={selectedPreference}
-                                onValueChange={(itemValue) => {
-                                    console.log('Selected preference:', itemValue);
-                                    setSelectedPreference(itemValue)
-                                }}
-                                style={styles.preferencePicker}
-                            >
-                                <Picker.Item label="Video" value="video" style={styles.preferenceLabel} />
-                                <Picker.Item label="Article" value="article" style={styles.preferenceLabel} />
-                                <Picker.Item label="Soundtrack" value="soundtrack" style={styles.preferenceLabel} />
-                            </Picker>
-                            <Button title="Update Preference" onPress={handleUpdatePreference} />
-                        </View>
-                    ) : (
-                        <FlatList
-                            horizontal
-                            data={recommendedMaterials}
-                            renderItem={renderRecommendedMaterialItem}
-                            keyExtractor={(item) => item.id.toString()}
-                        />
-                    )
-                }
-            </View >
-            <TouchableOpacity onPress={handleViewAllMaterials}>
-                <Text>Check all avaiable materials</Text>
-            </TouchableOpacity>
-        </ScrollView >
+        <ScrollView style={styles.container}>
+            <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}>Exclusive For You</Text>
+                <FlatList
+                    horizontal
+                    data={recommendedMaterials}
+                    renderItem={renderRecommendedMaterialItem}
+                    keyExtractor={(item) => item.id.toString()}
+                />
+            </View>
+            <View style={styles.sectionContainer}>
+                <View style={styles.titleContainer}>
+                    <Text style={styles.sectionTitle}>Editor's Pick</Text>
+                    <TouchableOpacity onPress={handleViewAllMaterials}>
+                        <Text style={styles.checkAllText}>Check all</Text>
+                    </TouchableOpacity>
+                </View>
+                <FlatList
+                    horizontal
+                    data={hightlightMaterials}
+                    renderItem={renderRecommendedMaterialItem}
+                    keyExtractor={(item) => item.id.toString()}
+                />
+            </View>
+
+            <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}>Breathing Exercuse</Text>
+                <Card>
+                    <TouchableOpacity onPress={() => navigation.navigate('What is Breathing Exercise?')}>
+                        <ImageBackground source={require('../../assets/breath_banner.jpg')} style={styles.cardCover}>
+                            <Card.Content>
+                                <Text>Take a moment to focus on your breathing</Text>
+                            </Card.Content>
+                        </ImageBackground>
+                    </TouchableOpacity>
+                </Card>
+            </View>
+        </ScrollView>
     );
 };
 
@@ -138,6 +128,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#f3f3f3',
         padding: 10,
         borderRadius: 8,
+        marginBottom: 16,
+    },
+    sectionContainer: {
         marginBottom: 16,
     },
     sectionTitle: {
@@ -171,7 +164,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     recommendedMaterialItem: {
-        marginBottom: 8,
+        marginRight: 10,
     },
     recommendedMaterialTitle: {
         fontSize: 16,
@@ -180,6 +173,25 @@ const styles = StyleSheet.create({
     },
     recommendedMaterialDescription: {
         fontSize: 14,
+    },
+    titleContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    checkAllText: {
+        fontSize: 16,
+        color: 'blue',
+        textDecorationLine: 'underline',
+    },
+    cardCover: {
+        height: 200,
+        justifyContent: 'flex-end',
+    },
+    card: {
+        height: 100,
+        marginBottom: 10,
     },
 });
 
