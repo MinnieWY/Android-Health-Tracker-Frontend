@@ -1,18 +1,41 @@
 import React from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { Button, Card, Paragraph, Title } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
 
 const Community = ({ navigation }) => {
-    // Handle navigation to the search page
+    const theme = useTheme();
     const goToSearchPage = () => {
         navigation.navigate('CommunitySearch');
     };
 
+    const handleNavigateQuizHome = () => {
+        navigation.navigate('Quiz');
+    }
+
     return (
-        <View>
+        <View style={[styles.container, { backgroundColor: theme.colors.primary }]}>
             <Text>Welcome to the Community!</Text>
-            <Button title="Search Friends" onPress={goToSearchPage} />
+            <Button onPress={goToSearchPage}>Search Friends</Button>
+
+            <Card>
+                <Card.Title title="Quiz Game" subtitle="Improve your understanding through a simple daily quiz" />
+                <Card.Actions>
+                    <Button onPress={handleNavigateQuizHome}>Go and Check for What's new today</Button>
+                </Card.Actions>
+            </Card>
+
+
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 16,
+    },
+});
+
 
 export default Community;

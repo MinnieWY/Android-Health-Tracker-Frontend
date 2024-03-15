@@ -51,5 +51,27 @@ export interface FriendDTO {
     id?: string;
     username: string;
     email: string;
-    isFriend: boolean;
+}
+
+export interface QuestionDTO {
+    id?: string;
+    question: string;
+    answerOptions: string[];
+}
+
+export interface QuestionResultDTO {
+    id?: string;
+    question: string;
+    correctAnswer: string;
+    isCorrect: boolean;
+    explanation: string;
+    points: number;
+}
+
+export interface QuizHistoryListItemDTO {
+    id?: string;
+    question: string;
+    date: string;
+    isCorrect: boolean;
+    points: number;
 }
