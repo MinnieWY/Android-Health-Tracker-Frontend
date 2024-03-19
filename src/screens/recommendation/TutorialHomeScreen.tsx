@@ -64,11 +64,11 @@ const TutorialHomeScreen = ({ navigation }) => {
     );
 
     const handleMaterialPress = (materialId) => {
-        navigation.navigate('MaterialDetail', { materialId });
+        navigation.navigate('Lesson', { materialId });
     };
 
     const handleViewAllMaterials = () => {
-        navigation.navigate('MaterialList');
+        navigation.navigate('Available Materials');
     };
 
     return (

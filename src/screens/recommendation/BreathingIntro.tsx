@@ -32,7 +32,7 @@ const BreathingIntro = ({ navigation }) => {
             </Text>
             <Text style={styles.sectionTitle}>Preparation</Text>
             <Text style={styles.listItem}>A quiet and peaceful space</Text>
-            <Button mode="contained" onPress={() => navigation.navigate('BreathingExercise')}>Start</Button>
+            <Button mode="contained" onPress={() => navigation.navigate('Exercise')}>Start</Button>
         </ScrollView>
     );
 };

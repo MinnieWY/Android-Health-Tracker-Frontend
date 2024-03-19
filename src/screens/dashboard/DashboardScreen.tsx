@@ -1,17 +1,20 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import { LineChart, BarChart } from 'react-native-chart-kit';
+import { Card, Provider } from 'react-native-paper';
+import ErrorDialog from '../../utils/ErrorDialog';
 
 const DashboardScreen = ({ navigation }) => {
     const [hrvData, setHrvData] = useState(null);
     const [stepsData, setStepsData] = useState(null);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
                 const userId = await AsyncStorage.getItem('userId');
-                const response = await fetch("http://192.168.0.159:8080/dashboard", {
+                const response = await fetch("http://192.168.0.159:8080/dashboard/", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -21,11 +24,18 @@ const DashboardScreen = ({ navigation }) => {
                     }),
                 });
 
-                const data = await response.json();
-                setHrvData(data.hrv);
-                setStepsData(data.steps);
+                const result = await response.json();
+                if (result.error) {
+                    console.error('Unexpected error in server:', result.error);
+                    setError('Server error');
+                } else {
+                    const { data } = result;
+                    setHrvData(data.hrv);
+                    setStepsData(data.steps);
+                }
             } catch (error) {
-                console.error('Error fetching Dashboard data:', error);
+                console.error('Error in Frontend:', error);
+                setError('Server error');
             }
         };
 
@@ -33,81 +43,100 @@ const DashboardScreen = ({ navigation }) => {
 
     }, []);
 
-    return (
-        <ScrollView style={styles.container}>
-            {hrvData ? (
-                <View style={styles.hrvDataContainer}>
-                    <Text style={styles.hrvDataTitle}>HRV Information:</Text>
-                    <LineChart
-                        data={{
-                            labels: Object.keys(hrvData).map(date => date.substring(5, 10)),
-                            datasets: [
-                                {
-                                    data: Object.values(hrvData),
-                                },
-                            ],
-                        }}
-                        width={Dimensions.get('window').width - 32} // Adjust the width as needed
-                        height={220}
-                        yAxisLabel=""
-                        chartConfig={{
-                            backgroundColor: '#f3f3f3',
-                            backgroundGradientFrom: '#f3f3f3',
-                            backgroundGradientTo: '#f3f3f3',
-                            decimalPlaces: 0,
-                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        }}
-                        bezier
-                        style={styles.chart}
-                    />
-                </View>
-            ) : (
-                <Text style={styles.loadingText}>Loading HRV data...</Text>
-            )}
-            {stepsData ? (
-                <View style={styles.stepsDataContainer}>
-                    <Text style={styles.stepsDataTitle}>Steps Information:</Text>
-                    <BarChart
-                        data={{
-                            labels: Object.keys(stepsData).map(date => date.substring(5, 10)),
-                            datasets: [
-                                {
-                                    data: Object.values(stepsData),
-                                },
-                            ],
-                        }}
-                        width={Dimensions.get('window').width - 70} // Adjust the width as needed
-                        height={220}
-                        yAxisLabel=""
-                        chartConfig={{
-                            backgroundColor: '#f3f3f3',
-                            backgroundGradientFrom: '#f3f3f3',
-                            backgroundGradientTo: '#f3f3f3',
-                            decimalPlaces: 0,
-                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        }}
-                        style={styles.chart}
-                    />
-                </View>
-            ) : (
-                <Text style={styles.loadingText}>Loading steps data...</Text>
-            )}
+    const handleDismissError = () => {
+        setError('');
+    };
 
-        </ScrollView>
+    return (
+        <Provider>
+            <ScrollView style={styles.container}>
+                {error !== "" && (
+                    <ErrorDialog error={error} onDismiss={handleDismissError} />
+                )}
+                <View style={styles.rankingContainer}>
+                    <Card>
+                        <TouchableOpacity onPress={() => navigation.navigate('Ranking')}>
+                            <Card.Title title="Know your ranking among the population" />
+                            <Card.Cover source={require('../../assets/dashboard_card.jpg')} />
+                        </TouchableOpacity>
+                    </Card>
+                </View>
+                {hrvData ? (
+                    <View style={styles.hrvDataContainer}>
+                        <Text style={styles.hrvDataTitle}>HRV Information:</Text>
+                        <LineChart
+                            data={{
+                                labels: Object.keys(hrvData).map(date => date.substring(5, 10)),
+                                datasets: [
+                                    {
+                                        data: Object.values(hrvData),
+                                    },
+                                ],
+                            }}
+                            width={Dimensions.get('window').width - 32} // Adjust the width as needed
+                            height={220}
+                            yAxisLabel=""
+                            chartConfig={{
+                                backgroundColor: '#f3f3f3',
+                                backgroundGradientFrom: '#f3f3f3',
+                                backgroundGradientTo: '#f3f3f3',
+                                decimalPlaces: 0,
+                                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            }}
+                            bezier
+                            style={styles.chart}
+                        />
+                    </View>
+                ) : (
+                    <Text style={styles.loadingText}>Loading HRV data...</Text>
+                )}
+                {stepsData ? (
+                    <View style={styles.stepsDataContainer}>
+                        <Text style={styles.stepsDataTitle}>Steps Information:</Text>
+                        <BarChart
+                            data={{
+                                labels: Object.keys(stepsData).map(date => date.substring(5, 10)),
+                                datasets: [
+                                    {
+                                        data: Object.values(stepsData),
+                                    },
+                                ],
+                            }}
+                            width={Dimensions.get('window').width - 70} // Adjust the width as needed
+                            height={220}
+                            yAxisLabel=""
+                            chartConfig={{
+                                backgroundColor: '#f3f3f3',
+                                backgroundGradientFrom: '#f3f3f3',
+                                backgroundGradientTo: '#f3f3f3',
+                                decimalPlaces: 0,
+                                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            }}
+                            style={styles.chart}
+                        />
+                    </View>
+                ) : (
+                    <Text style={styles.loadingText}>Loading steps data...</Text>
+                )}
+
+            </ScrollView>
+        </Provider>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         padding: 16,
         backgroundColor: '#ffffff',
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
+        marginBottom: 16,
+    },
+    rankingContainer: {
         marginBottom: 16,
     },
     hrvDataContainer: {

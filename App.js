@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Login from './src/screens/login/Login';
 import ForgetPassword from './src/screens/login/ForgetPassword';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
+import RankingScreen from './src/screens/dashboard/RankingScreen';
 import TutorialHomeScreen from './src/screens/recommendation/TutorialHomeScreen';
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
 import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
@@ -20,6 +21,7 @@ import Community from './src/screens/community/Community';
 import QuizeHome from './src/screens/community/QuizHome';
 import QuizeScreen from './src/screens/community/QuizScreen';
 import QuizHistory from './src/screens/community/QuizHistory';
+import QuizRecord from './src/screens/community/QuizRecord';
 
 import { View, Image, Dimensions } from 'react-native';
 import { Provider } from 'react-redux';
@@ -57,22 +59,23 @@ function AuthStack() {
   );
 }
 
-function Dashboard() {
+function Home() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
+      <Stack.Screen name="Dashboard" component={DashboardScreen} />
+      <Stack.Screen name="Ranking" component={RankingScreen} />
     </Stack.Navigator>
   );
 }
 
-function Tutorial() {
+function Recommendation() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="TutorialHome" component={TutorialHomeScreen} />
+      <Stack.Screen name="Tutorial" component={TutorialHomeScreen} />
       <Stack.Screen name="Available Materials" component={MaterialListScreen} />
-      <Stack.Screen name="Materials" component={MaterialDetailScreen} />
+      <Stack.Screen name="Lesson" component={MaterialDetailScreen} />
       <Stack.Screen name="What is Breathing Exercise?" component={BreathingInro} />
-      <Stack.Screen name="BreathingExercise" component={BreathingExercise} headerShown={false} />
+      <Stack.Screen name="Exercise" component={BreathingExercise} headerShown={false} />
     </Stack.Navigator>
   );
 }
@@ -101,7 +104,7 @@ const AuthenticatedStack = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'Dashboard') {
+          if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Tutorial') {
             iconName = focused ? 'game-controller' : 'game-controller-outline';
@@ -116,24 +119,13 @@ const AuthenticatedStack = () => {
       })}
       options={{ headerShown: false }}
     >
-      <Tab.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
-      <Tab.Screen name="Tutorial" component={Tutorial} options={{ headerShown: false }} />
+      <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
+      <Tab.Screen name="Tutorial" component={Recommendation} options={{ headerShown: false }} />
       <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 };
 
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: '#2196F3',
-    accent: '#4CAF50',
-    background: '#FFFFFF',
-    surface: '#FFFFFF',
-    text: '#000000',
-  },
-};
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
