@@ -75,3 +75,8 @@ export interface QuizHistoryListItemDTO {
     isCorrect: boolean;
     points: number;
 }
+
+export interface BMIDTO {
+    bmi: number;
+    category: string;
+}
