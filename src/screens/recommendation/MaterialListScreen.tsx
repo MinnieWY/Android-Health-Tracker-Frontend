@@ -28,7 +28,7 @@ const MaterialListScreen = ({ navigation }) => {
     }, []);
 
     const handleMaterialPress = (materialid: String) => {
-        navigation.navigate('MaterialDetail', { materialId: materialid });
+        navigation.navigate('Lesson', { materialId: materialid });
 
     };
     return (

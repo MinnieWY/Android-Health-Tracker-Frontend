@@ -14,6 +14,17 @@ export interface UserDTO {
     preference: string;
 }
 
+export interface UserInfoDTO {
+    id?: string;
+    username: string;
+    email: string;
+    preference: string;
+    height: number;
+    weight: number;
+    age: number;
+    gender: string;
+}
+
 export interface MaterialListItemDTO {
     id?: string;
     name: string;
@@ -40,5 +51,38 @@ export interface FriendDTO {
     id?: string;
     username: string;
     email: string;
-    isFriend: boolean;
+}
+
+export interface QuestionDTO {
+    id?: string;
+    question: string;
+    answerOptions: string[];
+}
+
+export interface QuestionResultDTO {
+    id?: string;
+    question: string;
+    correctAnswer: string;
+    isCorrect: boolean;
+    explanation: string;
+    points: number;
+}
+
+export interface QuizHistoryListItemDTO {
+    id?: string;
+    question: string;
+    date: string;
+    isCorrect: boolean;
+    points: number;
+}
+
+export interface RankDTO {
+    id?: string;
+    rank: number;
+    point: number;
+}
+
+export interface BMIDTO {
+    bmi: number;
+    category: string;
 }

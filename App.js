@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler'
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -5,19 +6,30 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Login from './src/screens/login/Login';
 import ForgetPassword from './src/screens/login/ForgetPassword';
-import Registration from './src/screens/login/Registration';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
+import RankingScreen from './src/screens/dashboard/RankingScreen';
+import TutorialHomeScreen from './src/screens/recommendation/TutorialHomeScreen';
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
 import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
-import Profile from './src/screens/profile/ProfileScreen';
+import BreathingInro from './src/screens/recommendation/BreathingIntro';
+import BreathingExercise from './src/screens/recommendation/BreathingExercise';
+import ProfileScreen from './src/screens/profile/ProfileScreen';
+import PersonalInfoScreen from './src/screens/profile/PersonalInfoScreen';
 import EditPersonalInfoScreen from './src/screens/profile/EditPersonalInfoScreen';
 import AboutUsScreen from './src/screens/profile/AboutUsScreen';
 import Community from './src/screens/community/Community';
+import CommunitySearch from './src/screens/community/CommunitySearch';
+import QuizeHome from './src/screens/community/QuizHome';
+import QuizeScreen from './src/screens/community/QuizScreen';
+import QuizHistory from './src/screens/community/QuizHistory';
+import QuizRecord from './src/screens/community/QuizRecord';
+
 import { View, Image, Dimensions } from 'react-native';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import rootReducer from './src/redux/reducers';
 import AuthContext from './src/AuthContext';
+import ErrorDialog from './src/utils/ErrorDialog';
 
 
 const Stack = createStackNavigator();
@@ -44,25 +56,27 @@ function AuthStack() {
     <Stack.Navigator>
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
-      <Stack.Screen name="Registration" component={Registration} />
     </Stack.Navigator>
   );
 }
 
-function Dashboard() {
+function Home() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
+      <Stack.Screen name="Dashboard" component={DashboardScreen} />
+      <Stack.Screen name="Ranking" component={RankingScreen} />
     </Stack.Navigator>
   );
 }
 
-function Tutorial() {
+function Recommendation() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="TutorialHome" component={TutorialScreen} />
-      <Stack.Screen name="MaterialList" component={MaterialListScreen} />
-      <Stack.Screen name="MaterialDetail" component={MaterialDetailScreen} />
+      <Stack.Screen name="Tutorial" component={TutorialHomeScreen} />
+      <Stack.Screen name="Available Materials" component={MaterialListScreen} />
+      <Stack.Screen name="Lesson" component={MaterialDetailScreen} />
+      <Stack.Screen name="What is Breathing Exercise?" component={BreathingInro} />
+      <Stack.Screen name="Exercise" component={BreathingExercise} headerShown={false} />
     </Stack.Navigator>
   );
 }
@@ -70,10 +84,16 @@ function Tutorial() {
 function Profile() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="ProfileScreen" component={Profile} />
+      <Stack.Screen name="Profile Screen" component={ProfileScreen} />
       <Stack.Screen name="Community" component={Community} />
-      <Stack.Screen name="EditPersonalInfo" component={EditPersonalInfoScreen} />
-      <Stack.Screen name="AboutUS" component={AboutUsScreen} />
+      <Stack.Screen name="User Search" component={CommunitySearch} />
+      <Stack.Screen name="Personal Information" component={PersonalInfoScreen} />
+      <Stack.Screen name="Edit Personal Information" component={EditPersonalInfoScreen} />
+      <Stack.Screen name="Quiz" component={QuizeHome} />
+      <Stack.Screen name="Quiz of Today" component={QuizeScreen} />
+      <Stack.Screen name="Quiz Record List" component={QuizHistory} />
+      <Stack.Screen name="Quiz Record" component={QuizRecord} />
+      <Stack.Screen name="About Us" component={AboutUsScreen} />
     </Stack.Navigator>
   );
 
@@ -86,7 +106,7 @@ const AuthenticatedStack = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'Dashboard') {
+          if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Tutorial') {
             iconName = focused ? 'game-controller' : 'game-controller-outline';
@@ -101,16 +121,19 @@ const AuthenticatedStack = () => {
       })}
       options={{ headerShown: false }}
     >
-      <Tab.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
-      <Tab.Screen name="Tutorial" component={Tutorial} options={{ headerShown: false }} />
+      <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
+      <Tab.Screen name="Tutorial" component={Recommendation} options={{ headerShown: false }} />
       <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 };
 
+
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
@@ -121,6 +144,10 @@ export default function App() {
   if (isLoading) {
     return <SplashScreen />;
   }
+
+  const handleDismissError = () => {
+    setError("");
+  };
 
   return (
     <Provider store={store}>
@@ -133,23 +160,9 @@ export default function App() {
           )}
         </NavigationContainer>
       </AuthContext.Provider>
+      {error !== "" && (
+        <ErrorDialog error={error} onDismiss={handleDismissError} />
+      )}
     </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logo: {
-    width: 300,
-    height: 300,
-    resizeMode: 'contain',
-  },
-});

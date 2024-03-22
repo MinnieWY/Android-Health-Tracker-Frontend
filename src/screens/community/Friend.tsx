@@ -25,40 +25,6 @@ const FriendScreen = ({ userId }) => {
         return (<Text>Loading...</Text>)
     };
 
-    const handleFriendAction = async () => {
-        const payload = {
-            currentUserId: await AsyncStorage.getItem('userId'),
-            targetFriendId: friendInfo.id,
-        };
-
-        if (friendInfo.isFriend) {
-            try {
-                await fetch('http://192.168.0.159:8080/removeFriend/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
-                setIsFriend(false);
-            } catch (error) {
-                console.error('Error fetching user information:', error);
-            }
-        } else {
-            try {
-                await fetch('http://192.168.0.159:8080/addFriend/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
-                setIsFriend(true);
-            } catch (error) {
-                console.error('Error fetching user information:', error);
-            }
-        }
-    };
     return (
         <View>
             <Card>
@@ -67,11 +33,6 @@ const FriendScreen = ({ userId }) => {
                     <Paragraph>Name: {friendInfo.username}</Paragraph>
                     <Paragraph>Email: {friendInfo.email}</Paragraph>
                 </Card.Content>
-                <Card.Actions>
-                    <Button onPress={handleFriendAction}>
-                        {friendInfo.isFriend ? 'Remove Friend' : 'Add Friend'}
-                    </Button>
-                </Card.Actions>
             </Card>
         </View>
     );
