@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Searchbar, useTheme } from 'react-native-paper';
 
-const CommunitySearch = () => {
+const CommunitySearch = ({ navigation }) => {
     const theme = useTheme();
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
@@ -15,22 +17,40 @@ const CommunitySearch = () => {
         return () => clearTimeout(delayDebounceFn);
     }, [searchQuery]);
 
-    const handleSearch = () => {
-        fetch(`http://192.168.0.159:8080/search?query=${searchQuery}`)
-            .then((response) => response.json())
-            .then((data) => {
-                setSearchResults(data);
-                console.log("searched", searchResults);
-            })
-            .catch((error) => {
-                console.error(error);
+    const handleSearch = async () => {
+        try {
+            const response = await fetch(`http://192.168.0.159:8080/query=${searchQuery}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             });
+
+            const result = await response.json();
+
+            if (result.error) {
+                console.error('Unexpected error in server:', result.error);
+                setError('Server error');
+            } else {
+                const { data } = result;
+                setSearchResults(data);
+            }
+        } catch (error) {
+            console.error('Not catched error in Frontend:', error);
+            setError('Server error');
+        }
+    };
+
+    const navigateToPublicProfile = (userId) => {
+        navigation.navigate('PublicProfile', { userId });
     };
 
     const renderListItem = ({ item }) => (
         <View style={styles.resultItem}>
-            <Text>{item.name}</Text>
-            <Text>{item.email}</Text>
+            <TouchableOpacity onPress={navigateToPublicProfile}>
+                <Text>{item.username}</Text>
+                <Text>{item.email}</Text>
+            </TouchableOpacity>
         </View>
     );
 

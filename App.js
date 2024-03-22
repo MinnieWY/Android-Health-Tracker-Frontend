@@ -18,6 +18,7 @@ import PersonalInfoScreen from './src/screens/profile/PersonalInfoScreen';
 import EditPersonalInfoScreen from './src/screens/profile/EditPersonalInfoScreen';
 import AboutUsScreen from './src/screens/profile/AboutUsScreen';
 import Community from './src/screens/community/Community';
+import CommunitySearch from './src/screens/community/CommunitySearch';
 import QuizeHome from './src/screens/community/QuizHome';
 import QuizeScreen from './src/screens/community/QuizScreen';
 import QuizHistory from './src/screens/community/QuizHistory';
@@ -85,6 +86,7 @@ function Profile() {
     <Stack.Navigator>
       <Stack.Screen name="Profile Screen" component={ProfileScreen} />
       <Stack.Screen name="Community" component={Community} />
+      <Stack.Screen name="User Search" component={CommunitySearch} />
       <Stack.Screen name="Personal Information" component={PersonalInfoScreen} />
       <Stack.Screen name="Edit Personal Information" component={EditPersonalInfoScreen} />
       <Stack.Screen name="Quiz" component={QuizeHome} />

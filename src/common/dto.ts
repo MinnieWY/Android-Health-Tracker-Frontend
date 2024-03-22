@@ -76,6 +76,12 @@ export interface QuizHistoryListItemDTO {
     points: number;
 }
 
+export interface RankDTO {
+    id?: string;
+    rank: number;
+    point: number;
+}
+
 export interface BMIDTO {
     bmi: number;
     category: string;
