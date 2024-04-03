@@ -86,3 +86,9 @@ export interface BMIDTO {
     bmi: number;
     category: string;
 }
+
+export interface StressDTO {
+    id?: string;
+    stressLevel: number;
+    date: string;
+}

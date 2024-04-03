@@ -8,6 +8,8 @@ import Login from './src/screens/login/Login';
 import ForgetPassword from './src/screens/login/ForgetPassword';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import RankingScreen from './src/screens/dashboard/RankingScreen';
+import StressScreen from './src/screens/stress/StressScreen';
+import PredictionScreen from './src/screens/stress/PredictionScreen';
 import TutorialHomeScreen from './src/screens/recommendation/TutorialHomeScreen';
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
 import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
@@ -65,6 +67,8 @@ function Home() {
     <Stack.Navigator>
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
       <Stack.Screen name="Ranking" component={RankingScreen} />
+      <Stack.Screen name='Stress Management' component={StressScreen} />
+      <Stack.Screen name='Prediction' component={PredictionScreen} />
     </Stack.Navigator>
   );
 }
