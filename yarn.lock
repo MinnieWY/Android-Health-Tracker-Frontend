@@ -3954,6 +3954,11 @@
     "compare-versions" "^3.4.0"
     "invariant" "^2.2.4"
 
+"expo-sharing@~11.5.0":
+  "integrity" "sha512-uerM5YH1FKDZXfkP9ORebvlMVOPP/AfoYgYBez6a8G9fztNYHnRCA6mgK+3aQmpnb3ltmjnAZC39kH18bTNcVw=="
+  "resolved" "https://registry.npmjs.org/expo-sharing/-/expo-sharing-11.5.0.tgz"
+  "version" "11.5.0"
+
 "expo-status-bar@~1.6.0":
   "integrity" "sha512-e//Oi2WPdomMlMDD3skE4+1ZarKCJ/suvcB4Jo/nO427niKug5oppcPNYO+csR6y3ZglGuypS+3pp/hJ+Xp6fQ=="
   "resolved" "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-1.6.0.tgz"

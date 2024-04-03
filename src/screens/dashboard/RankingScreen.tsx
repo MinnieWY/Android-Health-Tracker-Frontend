@@ -69,6 +69,7 @@ const RankingScreen = ({ navigation }) => {
 
                 } else {
                     const { data } = result as { data: BMIDTO };
+                    setProfileCompleted(true);
                     setBMIData(data);
                 }
             } catch (error) {

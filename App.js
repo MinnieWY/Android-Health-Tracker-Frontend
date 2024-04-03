@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Login from './src/screens/login/Login';
 import ForgetPassword from './src/screens/login/ForgetPassword';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
+import ShareScreen from './src/screens/dashboard/ShareScreen';
 import RankingScreen from './src/screens/dashboard/RankingScreen';
 import StressScreen from './src/screens/stress/StressScreen';
 import PredictionScreen from './src/screens/stress/PredictionScreen';
@@ -67,6 +68,7 @@ function Home() {
     <Stack.Navigator>
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
       <Stack.Screen name="Ranking" component={RankingScreen} />
+      <Stack.Screen name="Share" component={ShareScreen} />
       <Stack.Screen name='Stress Management' component={StressScreen} />
       <Stack.Screen name='Prediction' component={PredictionScreen} />
     </Stack.Navigator>
