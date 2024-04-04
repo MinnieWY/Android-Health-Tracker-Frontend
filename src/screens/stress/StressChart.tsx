@@ -1,24 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator, Text } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
-import { ScrollView } from 'react-native-gesture-handler';
+import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
+import { DataTable } from 'react-native-paper';
+import ErrorDialog from '../../utils/ErrorDialog';
+import { StressTrendDTO } from '../../common/dto';
 
 const baseStressURL = 'http://192.168.0.159:8080/stress/';
 
 const StressChart = () => {
-    const [stressData, setStressData] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [stressData, setStressData] = useState(null as StressTrendDTO | null);
     const [error, setError] = useState(null);
     const [fetching, setFetching] = useState(true);
-    //const [currentStressLevel, setCurrentStressLevel] = useState(0);
-
 
     useEffect(() => {
         const fetchStressData = async () => {
             try {
                 const userId = await AsyncStorage.getItem('userId');
-                const response = await fetch(baseStressURL + 'weekly', {
+                const response = await fetch(baseStressURL + 'trend', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -27,102 +25,120 @@ const StressChart = () => {
                         userId,
                     }),
                 });
-                const data = await response.json();
-                setStressData(data);
-                //setCurrentStressLevel(data.length > 0 ? data[data.length - 1].stressLevel : 0);
+                const result = await response.json();
+                if (result.error) {
+                    switch (result.error) {
+                        case 'ERROR_GET_WEEKLY_STRESS_FAILED':
+                            setFetching(false);
+                            console.error('Failed to get weekly stress data');
+                            setError('Failed to get weekly stress data');
+                            break;
+                        default:
+                            setFetching(false);
+                            console.error('Unexpected error in server:', result.error);
+                            setError('Server error');
+                            break;
+                    }
+                } else {
+                    const { data } = result as { data: StressTrendDTO };
+                    setStressData(data);
+                    setFetching(false);
+                }
             } catch (error) {
-                setError('Error fetching stress data: ' + error.message);
-            } finally {
-                setLoading(false);
-                setFetching(false); // Set fetching status to false when fetching is complete
+                setFetching(false);
+                console.log('Error when fetch Stress Data in Server:', error);
+                setError('Server Error');
             }
         };
 
         fetchStressData();
     }, []);
 
-    if (fetching || loading) { // Render a loading indicator while fetching or loading data
-        return (
-            <View>
-                <ActivityIndicator size="large" />
-                <Text>Loading stress data...</Text>
-            </View>
-        );
-    }
+    const handleDismissError = () => {
+        setError('');
+    };
 
-    if (error) {
-        return (
-            <View>
-                <Text>{error}</Text>
-            </View>
-        );
-    }
 
-    function calculateTrend(data) {
-        if (data) {
-
-            const latestStressLevel = data[data.length - 1].stressLevel;
-            const previousStressLevel = data[data.length - 2].stressLevel;
-
-            if (latestStressLevel > previousStressLevel) {
-                return { text: 'Stress level is increasing', color: '#FF5722' };
-            } else if (latestStressLevel < previousStressLevel) {
-                return { text: 'Stress level is decreasing', color: '#4CAF50' };
-            } else {
-                return { text: 'Stress level is stable', color: '#999' };
-            }
-        } else {
-            return { text: 'Not enough data to determine the trend', color: '#999' };
+    const getSuggestions = (trend) => {
+        switch (trend) {
+            case 'Fluctuating':
+                return 'Try to identify any patterns or triggers that cause fluctuations in your stress levels.';
+            case 'Increasing':
+                return 'Consider implementing stress management techniques such as meditation or exercise.';
+            case 'Decreasing':
+                return 'Great job! Continue practicing stress management techniques to maintain your stress levels.';
+            case 'Constant':
+                return 'Monitor your stress levels and try to identify any factors contributing to a constant level of stress.';
+            default:
+                return '';
         }
-    }
-
-    // Get tips based on the stress level
-    function getTips(stressLevel) {
-        if (!stressLevel) {
-            return 'No stress level recorded for today';
-        }
-
-        if (stressLevel <= 3) {
-            return 'You are doing well! Keep it up!';
-        } else if (stressLevel <= 7) {
-            return 'Take some time to relax and engage in activities you enjoy';
-        } else {
-            return 'It seems like you are experiencing high stress. Consider seeking support from friends, family, or professionals';
-        }
-    }
+    };
 
     return (
-        <ScrollView>
-            {stressData && <View>
-                <Text>This graph show your stress level over the past week.</Text>
-                <Text><Text style={{ color: calculateTrend(stressData).color }}>{calculateTrend(stressData).text}</Text></Text>
-                <Text>{getTips(0)}</Text>
-                <LineChart
-                    data={{
-                        labels: stressData.map((item) => item.date),
-                        datasets: [
-                            {
-                                data: stressData.map((item) => item.value),
-                            },
-                        ],
-                    }}
-                    width={400}
-                    height={220}
-                    chartConfig={{
-                        backgroundColor: '#ffffff',
-                        backgroundGradientFrom: '#ffffff',
-                        backgroundGradientTo: '#ffffff',
-                        decimalPlaces: 0,
-                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        style: {
-                            borderRadius: 16,
-                        },
-                    }}
-                    bezier
-                />
-            </View>}
-        </ScrollView>
+        <View>
+            {error && <ErrorDialog error={error} onDismiss={handleDismissError} />}
+
+            {fetching && (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator animating={true} size="large" color={'blue'} />
+                    <Text style={styles.loadingText}>Fetching data...</Text>
+                </View>
+            )}
+            {!fetching && stressData && (
+                <View>
+                    <Text style={styles.title}>Stress Trend</Text>
+                    <DataTable style={styles.dataTable}>
+                        <DataTable.Row>
+                            <DataTable.Cell>Mean Stress Level:</DataTable.Cell>
+                            <DataTable.Cell numeric>{stressData.mean}</DataTable.Cell>
+                        </DataTable.Row>
+                        <DataTable.Row>
+                            <DataTable.Cell>Mode Stress Level:</DataTable.Cell>
+                            <DataTable.Cell numeric>{stressData.mode}</DataTable.Cell>
+                        </DataTable.Row>
+                        <DataTable.Row>
+                            <DataTable.Cell>Trend:</DataTable.Cell>
+                            <DataTable.Cell numeric>{stressData.trend}</DataTable.Cell>
+                        </DataTable.Row>
+                    </DataTable>
+
+                    <Text style={styles.suggestions}>{getSuggestions(stressData.trend)}</Text>
+                </View>
+            )}
+        </View>
+
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 16,
+        backgroundColor: '#f5f5f5',
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    dataTable: {
+        marginBottom: 20,
+        backgroundColor: 'white',
+    },
+    suggestions: {
+        fontSize: 16,
+        marginVertical: 10,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        fontSize: 20,
+        textAlign: 'center',
+        marginTop: 10,
+    },
+});
 
 export default StressChart;

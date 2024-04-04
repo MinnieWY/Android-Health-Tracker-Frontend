@@ -92,3 +92,10 @@ export interface StressDTO {
     stressLevel: number;
     date: string;
 }
+
+export interface StressTrendDTO {
+    id: string;
+    trend: string;
+    mean: number;
+    mode: number;
+}

@@ -10,7 +10,6 @@ import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import ShareScreen from './src/screens/dashboard/ShareScreen';
 import RankingScreen from './src/screens/dashboard/RankingScreen';
 import StressScreen from './src/screens/stress/StressScreen';
-import PredictionScreen from './src/screens/stress/PredictionScreen';
 import TutorialHomeScreen from './src/screens/recommendation/TutorialHomeScreen';
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
 import MaterialDetailScreen from './src/screens/recommendation/MaterialDetailScreen';
@@ -42,7 +41,7 @@ const store = createStore(rootReducer);
 
 function SplashScreen() {
   const windowWidth = Dimensions.get('window').width;
-  const logoSize = windowWidth * 0.5; // Adjust the scaling factor as needed
+  const logoSize = windowWidth * 0.5;
 
   return (
     <View>
@@ -70,7 +69,6 @@ function Home() {
       <Stack.Screen name="Ranking" component={RankingScreen} />
       <Stack.Screen name="Share" component={ShareScreen} />
       <Stack.Screen name='Stress Management' component={StressScreen} />
-      <Stack.Screen name='Prediction' component={PredictionScreen} />
     </Stack.Navigator>
   );
 }
