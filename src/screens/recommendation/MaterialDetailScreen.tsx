@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import ArticleMaterial from './ArticleMaterial';
-import SoundtrackMaterial from './SoundtrackMaterial';
 import VideoMaterial from './VideoMaterial';
 import { Headline } from 'react-native-paper';
 import { MaterialItemDTO } from '../../common/dto';
-
+import { serverURL } from '../../api/config';
 
 const MaterialDetailScreen = ({ route }) => {
     const [material, setMaterial] = useState<MaterialItemDTO>();
@@ -14,7 +13,7 @@ const MaterialDetailScreen = ({ route }) => {
     useEffect(() => {
         const fetchMaterial = async () => {
             try {
-                const response = await fetch(`http://192.168.0.159:8080/recommendation/${materialId}`, {
+                const response = await fetch(`${serverURL}recommendation/${materialId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -37,9 +36,6 @@ const MaterialDetailScreen = ({ route }) => {
                 break;
             case 'article':
                 MaterialComponent = ArticleMaterial;
-                break;
-            case 'soundtrack':
-                MaterialComponent = SoundtrackMaterial;
                 break;
             default:
                 MaterialComponent = () => (

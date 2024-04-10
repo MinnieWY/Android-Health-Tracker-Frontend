@@ -4,8 +4,9 @@ import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import ErrorDialog from '../../utils/ErrorDialog';
 import { StressTrendDTO } from '../../common/dto';
+import { serverURL } from '../../api/config';
 
-const baseStressURL = 'http://192.168.0.159:8080/stress/';
+const baseStressURL = `${serverURL}stress/`;
 
 const StressChart = () => {
     const [stressData, setStressData] = useState(null as StressTrendDTO | null);

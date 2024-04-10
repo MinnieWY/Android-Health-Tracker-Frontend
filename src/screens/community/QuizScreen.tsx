@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { Button, Icon, RadioButton } from 'react-native-paper';
 import { QuestionDTO, QuestionResultDTO } from '../../common/dto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { serverURL } from '../../api/config';
 
 const QuizScreen = () => {
     const [question, setQuestion] = useState(null);
@@ -18,7 +19,7 @@ const QuizScreen = () => {
 
     const fetchQuestionFromServer = async () => {
         try {
-            const response = await fetch('http://192.168.0.159:8080/quiz/question');
+            const response = await fetch(`${serverURL}/quiz/question'`);
             const result = await response.json();
 
             if (result.error) {
@@ -43,7 +44,7 @@ const QuizScreen = () => {
     const submitAnswer = async () => {
         try {
             const userId = AsyncStorage.getItem('userId');
-            const response = await fetch('http://192.168.0.159:8080/quiz/question', {
+            const response = await fetch(`${serverURL}/quiz/question`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

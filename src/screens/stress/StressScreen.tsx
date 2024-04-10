@@ -6,12 +6,12 @@ import Slider from '@react-native-community/slider';
 import { FontAwesome } from '@expo/vector-icons';
 import { StressDTO } from '../../common/dto';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Calendar } from 'react-native-calendars';
 import ErrorDialog from '../../utils/ErrorDialog';
 import StressChart from './StressChart';
 import Mission from './Mission';
+import { serverURL } from '../../api/config';
 
-const baseStressURL = 'http://192.168.0.159:8080/stress/';
+const baseStressURL = `${serverURL}stress/`;
 
 const StressScreen = ({ navigation }) => {
     const [currentStressLevel, setCurrentStressLevel] = useState(0);
@@ -19,8 +19,6 @@ const StressScreen = ({ navigation }) => {
     const [showRingCircle, setShowRingCircle] = useState(false);
     const [fetchingData, setFetchingData] = useState(false);
     const [todayStressLevel, setTodayStressLevel] = useState(0);
-    const [predictedValue, setPredictedValue] = useState(null);
-    const [previousWeekStressData, setPreviousWeekStressData] = useState([]);
     const [updateLoading, setupdateLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -57,16 +55,19 @@ const StressScreen = ({ navigation }) => {
                     if (data == 0) {
                         setShowRatingSection(true);
                         setShowRingCircle(false);
+                        setFetchingData(false);
                     } else {
                         setShowRatingSection(false);
                         setShowRingCircle(true);
                         setTodayStressLevel(data);
+                        setFetchingData(false);
                     }
                 }
                 setFetchingData(false);
             } catch (error) {
                 console.error('Not catched error in Frontend:', error);
                 setError('Server error');
+                setFetchingData(false);
             }
         };
         fetchTodayStressData();
@@ -76,10 +77,9 @@ const StressScreen = ({ navigation }) => {
         setCurrentStressLevel(value);
     };
 
-
     const handlePredictionClick = async () => {
+        setupdateLoading(true);
         try {
-            setupdateLoading(true);
             const userId = await AsyncStorage.getItem('userId');
             const response = await fetch(baseStressURL + 'prediction', {
                 method: 'POST',
@@ -91,13 +91,20 @@ const StressScreen = ({ navigation }) => {
                 }),
             });
             const result = await response.json();
-
-
+            console.log('Result:', result);
             if (result.error) {
                 switch (result.error) {
                     case 'ABSENT_FEATURES':
                         console.error('Missing data for analysis.');
                         setError('Missing data for analysis. Please sync data before process.');
+                        break;
+                    case 'CONNECT_FAILED':
+                        setTodayStressLevel(1);
+                        setShowRatingSection(!showRatingSection);
+                        setShowRingCircle(!showRingCircle);
+                        console.log('here')
+                        setupdateLoading(false);
+                        //console.error('Connection failed with Fitbit server.');
                         break;
                     default:
                         console.error('Unexpected error:', result.error);
@@ -106,11 +113,12 @@ const StressScreen = ({ navigation }) => {
                         break;
                 }
             } else {
-                const { data } = result;
-                setPredictedValue(data);
+                const { data } = result as { data: StressDTO };
+                setTodayStressLevel(data.stressLevel);
+                setShowRatingSection(false);
+                setShowRingCircle(true);
                 setupdateLoading(false);
             }
-
         } catch (error) {
             console.error('Error updating stress data:', error);
             setError('Server error');
@@ -126,7 +134,6 @@ const StressScreen = ({ navigation }) => {
         setupdateLoading(true);
         try {
             const userId = await AsyncStorage.getItem('userId');
-            console.log('level:', currentStressLevel)
             const response = await fetch(baseStressURL + 'input', {
                 method: 'POST',
                 headers: {
@@ -145,7 +152,6 @@ const StressScreen = ({ navigation }) => {
                 setupdateLoading(false);
             } else {
                 const { data } = result as { data: StressDTO };
-                console.log('data:', data)
                 setTodayStressLevel(data.stressLevel);
                 setShowRatingSection(false);
                 setShowRingCircle(true);
@@ -162,7 +168,7 @@ const StressScreen = ({ navigation }) => {
 
     const handleDismissError = () => {
         setError('');
-        // navigation.navigate('Dashboard');
+        navigation.navigate('Dashboard');
     };
 
     return (
@@ -201,7 +207,7 @@ const StressScreen = ({ navigation }) => {
                 {updateLoading && (
                     <View>
                         <ActivityIndicator animating={true} size="large" color={'blue'} />
-                        <Text style={{ fontSize: 40, textAlign: 'center' }} >Processing...</Text>
+                        <Text style={{ fontSize: 30, textAlign: 'center' }} >Processing...</Text>
                     </View>
                 )}
 

@@ -5,8 +5,13 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Text } from 'react-native-paper';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
+import ErrorDialog from '../../utils/ErrorDialog';
+import { useRoute } from '@react-navigation/native';
+import { serverURL } from '../../api/config';
 
-const ShareScreen = () => {
+const ShareScreen = ({ navigation }) => {
+    const route = useRoute();
+    const { date, steps } = route.params;
     const [imageData, setImageData] = useState(null);
     const [error, setError] = useState('');
 
@@ -17,16 +22,16 @@ const ShareScreen = () => {
     const fetchImage = async () => {
         try {
             const userId = await AsyncStorage.getItem("userId");
-            const response = await fetch("http://192.168.0.159:8080/dashboard/sharing", {
+            const startDate = new Date(date);
+            const response = await fetch(`${serverURL}dashboard/sharing`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     userId,
-                    steps: 10000,
-                    startDate: new Date(),
-                    days: 7,
+                    steps: 12191,
+                    startDate: startDate.toLocaleDateString('en-GB'),
                 }),
             });
 
@@ -81,6 +86,7 @@ const ShareScreen = () => {
 
     return (
         <ScrollView>
+            {/* {error !== "" && <ErrorDialog error={error} onDismiss={() => { setError(''); navigation.navigate("Dashboard") }} />} */}
             <View style={styles.container}>
                 <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
                     <Text style={styles.shareButtonText}>Save / Share</Text>

@@ -4,6 +4,7 @@ import { IconButton } from 'react-native-paper';
 import { UserInfoDTO } from "../../common/dto";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native-gesture-handler";
+import { serverURL } from "../../api/config";
 
 const PersonalInfoScreen = ({ navigation }) => {
     const [userInfo, setUserInfo] = React.useState<UserInfoDTO | null>(null);
@@ -13,12 +14,17 @@ const PersonalInfoScreen = ({ navigation }) => {
             try {
                 const userId = await AsyncStorage.getItem("userId");
                 const response = await fetch(
-                    `http://192.168.0.159:8080/userInfo/${userId}`
+                    `${serverURL}userInfo/${userId}`
                 );
                 const result = await response.json();
+                if (result.error) {
+                    console.error("Error fetching user information:", result.error);
+                    return;
+                } else {
+                    const { data } = result as { data: UserInfoDTO };
+                    setUserInfo(data);
+                }
 
-                const { data, metadata } = result as { data: UserInfoDTO, metadata: any };
-                setUserInfo(data);
             } catch (error) {
                 console.error("Error fetching user information:", error);
             }
@@ -54,10 +60,6 @@ const PersonalInfoScreen = ({ navigation }) => {
                             <Text style={styles.infoValue}>{userInfo.gender}</Text>
                         </View>
                         <View style={styles.infoRow}>
-                            <Text style={styles.infoLabel}>Age</Text>
-                            <Text style={styles.infoValue}>{userInfo.age}</Text>
-                        </View>
-                        <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Height (cm)</Text>
                             <Text style={styles.infoValue}>{userInfo.height}</Text>
                         </View>
@@ -68,6 +70,10 @@ const PersonalInfoScreen = ({ navigation }) => {
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Preference</Text>
                             <Text style={styles.infoValue}>{userInfo.preference}</Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Point</Text>
+                            <Text style={styles.infoValue}>{userInfo.point}</Text>
                         </View>
                     </View>
                 </ScrollView>

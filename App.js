@@ -8,7 +8,6 @@ import Login from './src/screens/login/Login';
 import ForgetPassword from './src/screens/login/ForgetPassword';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import ShareScreen from './src/screens/dashboard/ShareScreen';
-import RankingScreen from './src/screens/dashboard/RankingScreen';
 import StressScreen from './src/screens/stress/StressScreen';
 import TutorialHomeScreen from './src/screens/recommendation/TutorialHomeScreen';
 import MaterialListScreen from './src/screens/recommendation/MaterialListScreen';
@@ -46,8 +45,8 @@ function SplashScreen() {
   return (
     <View>
       <Image
-        source={require('./src/assets/logo.png')}
-        style={{ width: logoSize, height: logoSize, alignSelf: 'center' }}
+        source={require('./src/assets/app_logo.png')}
+        style={{ width: logoSize, height: logoSize, alignSelf: 'center', marginVertical: 50 }}
       />
     </View>
   );
@@ -66,7 +65,6 @@ function Home() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
-      <Stack.Screen name="Ranking" component={RankingScreen} />
       <Stack.Screen name="Share" component={ShareScreen} />
       <Stack.Screen name='Stress Management' component={StressScreen} />
     </Stack.Navigator>
@@ -76,7 +74,7 @@ function Home() {
 function Recommendation() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Tutorial" component={TutorialHomeScreen} />
+      <Stack.Screen name="Coach" component={TutorialHomeScreen} />
       <Stack.Screen name="Available Materials" component={MaterialListScreen} />
       <Stack.Screen name="Lesson" component={MaterialDetailScreen} />
       <Stack.Screen name="What is Breathing Exercise?" component={BreathingInro} />

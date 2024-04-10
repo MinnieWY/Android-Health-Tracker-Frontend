@@ -2005,10 +2005,10 @@
   "resolved" "https://registry.npmjs.org/@react-native-community/slider/-/slider-4.5.0.tgz"
   "version" "4.5.0"
 
-"@react-native-picker/picker@^2.4.0":
-  "integrity" "sha512-oJftvmLOj6Y6/bF4kPcK6L83yNBALGmqNYugf94BzP0FQGpHBwimVN2ygqkQ2Sn2ZU3pGUZMs0jV6+Gku2GyYg=="
-  "resolved" "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.6.1.tgz"
-  "version" "2.6.1"
+"@react-native-picker/picker@^2.7.2":
+  "integrity" "sha512-a+UiyCu0XtXJK+VGIFggwA02PU3dgnvUPxlk2u99ZphTFp80Va8WH1OM9g2gyUXTVg9a5iybpDBa2+7fDfIMXA=="
+  "resolved" "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.7.2.tgz"
+  "version" "2.7.2"
 
 "@react-native/assets-registry@^0.72.0":
   "integrity" "sha512-Im93xRJuHHxb1wniGhBMsxLwcfzdYreSZVQGDoMJgkd6+Iky61LInGEHnQCTN0fKNYF1Dvcofb4uMmE1RQHXHQ=="
@@ -4914,11 +4914,6 @@
   "resolved" "https://registry.npmjs.org/lodash.debounce/-/lodash.debounce-4.0.8.tgz"
   "version" "4.0.8"
 
-"lodash.isequal@^4.5.0":
-  "integrity" "sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ=="
-  "resolved" "https://registry.npmjs.org/lodash.isequal/-/lodash.isequal-4.5.0.tgz"
-  "version" "4.5.0"
-
 "lodash.throttle@^4.1.1":
   "integrity" "sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ=="
   "resolved" "https://registry.npmjs.org/lodash.throttle/-/lodash.throttle-4.1.1.tgz"
@@ -6412,12 +6407,12 @@
     "color" "^3.1.2"
     "use-latest-callback" "^0.1.5"
 
-"react-native-picker-select@^9.0.1":
-  "integrity" "sha512-iIhb82OSH1vqB/HoipvbuX3RCzmeaQmIASlaRbv6X8imNjzh1DH/LaKoF4+DAZJLT0iX7QG79vpwZu8wjWap3Q=="
-  "resolved" "https://registry.npmjs.org/react-native-picker-select/-/react-native-picker-select-9.0.1.tgz"
-  "version" "9.0.1"
+"react-native-progress@^5.0.1":
+  "integrity" "sha512-TYfJ4auAe5vubDma2yfFvt7ktSI+UCfysqJnkdHEcLXqAitRFOozgF/cLgN5VNi/iLdaf3ga1ETi2RF4jVZ/+g=="
+  "resolved" "https://registry.npmjs.org/react-native-progress/-/react-native-progress-5.0.1.tgz"
+  "version" "5.0.1"
   dependencies:
-    "lodash.isequal" "^4.5.0"
+    "prop-types" "^15.7.2"
 
 "react-native-reanimated@~3.3.0":
   "integrity" "sha512-LzfpPZ1qXBGy5BcUHqw3pBC0qSd22qXS3t8hWSbozXNrBkzMhhOrcILE/nEg/PHpNNp1xvGOW8NwpAMF006roQ=="
@@ -6447,12 +6442,17 @@
   "resolved" "https://registry.npmjs.org/react-native-size-matters/-/react-native-size-matters-0.4.2.tgz"
   "version" "0.4.2"
 
+"react-native-sound@^0.11.2":
+  "integrity" "sha512-LmGc8lgOK3qecYMVQpyHvww/C+wgT6sWeMpVbOe4NCRGC2yKd4fo4U0KBUo9PO7AqKESO3I/2GZg1/C0+bwiiA=="
+  "resolved" "https://registry.npmjs.org/react-native-sound/-/react-native-sound-0.11.2.tgz"
+  "version" "0.11.2"
+
 "react-native-storage@^0.2.4":
   "integrity" "sha512-A+szWzEjZx05gSieuV20aR/v0iCuQpsFBzABLhJMtVFecUMzGVbuRMBX2PngSXT+94X/7PRi80BSnoLBgNYZtw=="
   "resolved" "https://registry.npmjs.org/react-native-storage/-/react-native-storage-0.2.4.tgz"
   "version" "0.2.4"
 
-"react-native-svg@^15.1.0", "react-native-svg@> 6.4.1":
+"react-native-svg@*", "react-native-svg@^15.1.0", "react-native-svg@> 6.4.1":
   "integrity" "sha512-p0Sx0EpQNk1nu6UcMEiB8K9P04n3J7s+pNYUwf1d/Yz+v4hk961VjuVqjyndgiEbHZyWiKWLZRVNuvLpwjPY2A=="
   "resolved" "https://registry.npmjs.org/react-native-svg/-/react-native-svg-15.1.0.tgz"
   "version" "15.1.0"
@@ -6488,7 +6488,7 @@
   dependencies:
     "events" "^3.2.0"
 
-"react-native@*", "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.30.0", "react-native@>= 0.50.0", "react-native@>=0.56", "react-native@>=0.57", "react-native@>=0.60", "react-native@>=0.69", "react-native@0.72.6":
+"react-native@*", "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.30.0", "react-native@>= 0.50.0", "react-native@>=0.56", "react-native@>=0.57", "react-native@>=0.60", "react-native@>=0.69", "react-native@>=0.8.0", "react-native@0.72.6":
   "integrity" "sha512-RafPY2gM7mcrFySS8TL8x+TIO3q7oAlHpzEmC7Im6pmXni6n1AuufGaVh0Narbr1daxstw7yW7T9BKW5dpVc2A=="
   "resolved" "https://registry.npmjs.org/react-native/-/react-native-0.72.6.tgz"
   "version" "0.72.6"
@@ -6556,7 +6556,7 @@
     "object-assign" "^4.1.1"
     "react-is" "^16.12.0 || ^17.0.0 || ^18.0.0"
 
-"react@*", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.9.0 || ^17.0.0 || ^18", "react@^18.0", "react@^18.2.0", "react@> 16.7.0", "react@>= 15.2.1", "react@>= 16.3.0", "react@>=16", "react@>=16.0", "react@>=16.3.0", "react@>=16.8", "react@>=16.8.0", "react@>=16.8.6", "react@>=17.0.0", "react@18.2.0":
+"react@*", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.9.0 || ^17.0.0 || ^18", "react@^18.0", "react@^18.2.0", "react@> 16.7.0", "react@>= 15.2.1", "react@>= 16.3.0", "react@>=16.0", "react@>=16.3.0", "react@>=16.8", "react@>=16.8.0", "react@>=16.8.6", "react@>=17.0.0", "react@18.2.0":
   "integrity" "sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ=="
   "resolved" "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   "version" "18.2.0"
