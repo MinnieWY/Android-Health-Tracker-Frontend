@@ -20,4 +20,5 @@ The project consists of four major components
 7. Wait for running
 8. Type `a` to run the application on Android Devices via USB, or you can use the Expo Go application to scan the QR code shown in the terminal
 
-An installation guide with screenshots is stored as [FrontendInstallationGuide.pdf]([https://duckduckgo.com](https://github.com/MinnieWY/Android-Health-Tracker-Frontend/blob/main/FrontendInstallationGuide.pdf))
+An installation guide with screenshots is attached:
+[FrontendInstallationGuide.pdf](https://github.com/MinnieWY/Android-Health-Tracker-Frontend/blob/main/FrontendInstallationGuide.pdf)
