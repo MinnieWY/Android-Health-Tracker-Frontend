@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Searchbar, useTheme } from 'react-native-paper';
+import { serverURL } from '../../api/config';
 
 const CommunitySearch = ({ navigation }) => {
     const theme = useTheme();
@@ -19,7 +20,7 @@ const CommunitySearch = ({ navigation }) => {
 
     const handleSearch = async () => {
         try {
-            const response = await fetch(`http://192.168.0.159:8080/query=${searchQuery}`, {
+            const response = await fetch(`${serverURL}/query=${searchQuery}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,5 +1,7 @@
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
-import { View, Text, Button } from "react-native";
+import React, { useCallback, useState } from "react";
+import { View, StyleSheet } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import { Text, Headline } from "react-native-paper";
 import YoutubePlayer from "react-native-youtube-iframe";
 
 const VideoMaterial = ({ material }) => {
@@ -24,17 +26,32 @@ const VideoMaterial = ({ material }) => {
     }
 
     return (
-        <View>
+        <ScrollView style={{ padding: 16 }}>
             <YoutubePlayer
-                height={300}
+                height={210}
                 play={playing}
 
                 videoId={getVideoId(material.url)}
                 onChangeState={onStateChange}
             />
-            <Text>{material.description}</Text>
-        </View>
+            <View>
+                <Headline>{material.description}</Headline>
+                <Text variant="bodyMedium" style={styles.mainText}>
+                    {material.content}
+                </Text>
+            </View>
+
+        </ScrollView>
     );
 };
+
+const styles = StyleSheet.create({
+    mainText: {
+        marginTop: 16,
+        marginBottom: 16,
+        lineHeight: 24,
+    },
+});
+
 
 export default VideoMaterial;

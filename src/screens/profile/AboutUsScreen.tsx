@@ -25,7 +25,7 @@ const AboutUsScreen = () => {
             <Divider />
             <View>
                 <Text>Attribution</Text>
-                <Text>All image except application's logo made by Freepik from www.flaticon.com</Text>
+                <Text>Part of image is made by Freepik from www.flaticon.com</Text>
             </View>
         </ScrollView>
     );

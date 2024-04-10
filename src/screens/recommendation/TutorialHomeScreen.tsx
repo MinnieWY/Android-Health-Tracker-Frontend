@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView, ImageBackground, Dimensions } from 'react-native';
 import { Card } from 'react-native-paper';
 import { MaterialListItemDTO } from '../../common/dto';
+import { serverURL } from '../../api/config';
 
 const TutorialHomeScreen = ({ navigation }) => {
     const windowWidth = Dimensions.get('window').width;
@@ -16,7 +17,7 @@ const TutorialHomeScreen = ({ navigation }) => {
             try {
                 const userId = await AsyncStorage.getItem('userId');
                 const response = await fetch(
-                    "http://192.168.0.159:8080/recommendation/recommended-materials", {
+                    `${serverURL}recommendation/recommended-materials`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -36,7 +37,7 @@ const TutorialHomeScreen = ({ navigation }) => {
         const fetchHightlightMaterials = async () => {
             try {
                 const response = await fetch(
-                    "http://192.168.0.159:8080/recommendation/highlight");
+                    `${serverURL}recommendation/highlight`);
                 const data = await response.json();
                 const materialList: MaterialListItemDTO[] = data;
                 setHightlightMaterials(materialList);

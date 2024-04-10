@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { FriendDTO } from '../../common/dto';
 import { Button, Card, Paragraph, Title } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { serverURL } from '../../api/config';
 
 const FriendScreen = ({ userId }) => {
     const [friendInfo, setFriendInfo] = useState<FriendDTO | null>(null);
@@ -11,7 +12,7 @@ const FriendScreen = ({ userId }) => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await fetch(`http://192.168.0.159:8080/${userId}`);
+                const response = await fetch(`${serverURL}${userId}`);
                 const data: FriendDTO = await response.json();
                 setFriendInfo(data);
             } catch (error) {

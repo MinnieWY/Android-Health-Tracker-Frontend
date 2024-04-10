@@ -21,7 +21,7 @@ export interface UserInfoDTO {
     preference: string;
     height: number;
     weight: number;
-    age: number;
+    point: number;
     gender: string;
 }
 
@@ -84,11 +84,26 @@ export interface RankDTO {
 
 export interface BMIDTO {
     bmi: number;
-    category: string;
+    bmiCategory: string;
+    bmiRanking: number;
 }
 
 export interface StressDTO {
     id?: string;
     stressLevel: number;
     date: string;
+}
+
+export interface StressTrendDTO {
+    id: string;
+    trend: string;
+    mean: number;
+    mode: number;
+}
+
+export interface SleepDTO {
+    sleepDuration: string;
+    sleepEfficiency: number;
+    startTime: string;
+    endTime: string;
 }

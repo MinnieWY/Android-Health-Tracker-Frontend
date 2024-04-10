@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Card, Paragraph, Title } from 'react-native-paper';
+import { Button, Card, Icon, IconButton, Paragraph, Title } from 'react-native-paper';
 import { MaterialListItemDTO } from '../../common/dto';
-
+import { serverURL } from '../../api/config';
 const MaterialListScreen = ({ navigation }) => {
     const [materials, setMaterials] = useState([]);
 
@@ -10,7 +10,7 @@ const MaterialListScreen = ({ navigation }) => {
         const fetchMaterialList = async () => {
             try {
 
-                const response = await fetch("http://192.168.0.159:8080/recommendation/list", {
+                const response = await fetch(`${serverURL}recommendation/list`, {
                     method: 'Get',
                     headers: {
                         'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ const MaterialListScreen = ({ navigation }) => {
                         <Card key={material.id} style={styles.card}>
                             <Card.Content>
                                 <Title>{material.name}</Title>
-                                <Paragraph>Type: {material.type}</Paragraph>
+                                <IconButton icon={material.type == "video" ? "video" : material.type == "article" ? "script-text-outline" : "microphone"} color={'#000000'} size={20} />
                                 <Paragraph>{material.shortDescription}</Paragraph>
                             </Card.Content>
                         </Card>

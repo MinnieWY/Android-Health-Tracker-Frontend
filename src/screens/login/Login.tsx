@@ -1,11 +1,12 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
+import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { TextInput, Button, ActivityIndicator } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../redux/actions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../AuthContext';
 import { UserDTO } from '../../common/dto';
+import { serverURL } from '../../api/config';
 
 const Login = ({ navigation }) => {
     const { setIsLoggedIn } = useContext(AuthContext);
@@ -13,11 +14,12 @@ const Login = ({ navigation }) => {
     const [username, setUsername] = useState('admin');
     const [password, setPassword] = useState('P@ssw0rd');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
-        setError('');
         try {
-            const response = await fetch('http://192.168.0.159:8080/login', {
+            setLoading(true);
+            const response = await fetch(`${serverURL}login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -33,20 +35,24 @@ const Login = ({ navigation }) => {
                 switch (result.error) {
                     case 'ERR_PASSWORD_MISMATCHED':
                         setError('Username does not match with password');
+                        setLoading(false);
                         break;
                     default:
                         console.error('Unexpected error:', result.error);
                         setError('Server error');
+                        setLoading(false);
                 }
             } else {
                 const { data } = result as { data: UserDTO };
                 await AsyncStorage.setItem('userId', JSON.stringify(data.id));
                 dispatch(loginSuccess());
+                setLoading(false);
                 setIsLoggedIn(true);
             }
         } catch (error) {
             console.error('Not catched error in Frontend:', error);
             setError('Server error');
+            setLoading(false);
         }
     };
 
@@ -54,8 +60,16 @@ const Login = ({ navigation }) => {
         navigation.navigate('ForgetPassword');
     };
 
+    const windowWidth = Dimensions.get('window').width;
+    const logoSize = windowWidth * 0.5; // Adjust the scaling factor as needed
+
     return (
         <View style={styles.container}>
+            <Image
+                source={require('../../assets/app_logo.png')}
+                style={{ width: logoSize, height: logoSize, alignSelf: 'center' }}
+            />
+
             <TextInput
                 label="Username"
                 style={styles.input}
@@ -73,8 +87,15 @@ const Login = ({ navigation }) => {
                 mode="outlined"
             />
             {error ? <Text style={styles.error}>{error}</Text> : null}
-            <Button onPress={handleLogin} style={styles.button} >Login</Button>
+            <Button onPress={handleLogin} style={styles.button} disabled={loading} >Login</Button>
             <Button onPress={handleForgotPassword} style={styles.button}>Forgot Password</Button>
+
+            {loading && (
+                <View>
+                    <ActivityIndicator animating={true} size="large" color={'blue'} />
+                    <Text style={{ fontSize: 20, textAlign: 'center' }} >Loading ...</Text>
+                </View>
+            )}
         </View>
     );
 };

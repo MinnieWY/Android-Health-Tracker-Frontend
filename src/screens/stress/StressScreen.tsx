@@ -1,15 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Button, FAB, Headline, Provider } from 'react-native-paper';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { Button, FAB, Headline, IconButton, Provider, Title } from 'react-native-paper';
 import Slider from '@react-native-community/slider';
 import { FontAwesome } from '@expo/vector-icons';
 import { StressDTO } from '../../common/dto';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Calendar } from 'react-native-calendars';
 import ErrorDialog from '../../utils/ErrorDialog';
+import StressChart from './StressChart';
+import Mission from './Mission';
+import { serverURL } from '../../api/config';
 
-const baseStressURL = 'http://192.168.0.159:8080/stress/';
+const baseStressURL = `${serverURL}stress/`;
 
 const StressScreen = ({ navigation }) => {
     const [currentStressLevel, setCurrentStressLevel] = useState(0);
@@ -17,14 +19,9 @@ const StressScreen = ({ navigation }) => {
     const [showRingCircle, setShowRingCircle] = useState(false);
     const [fetchingData, setFetchingData] = useState(false);
     const [todayStressLevel, setTodayStressLevel] = useState(0);
-    const [isFabVisible, setIsFabVisible] = useState(false);
+    const [updateLoading, setupdateLoading] = useState(false);
     const [error, setError] = useState('');
-    const [monthStressRecords, setMonthStressRecords] = useState({});
-    const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().split('T')[0].substring(5, 7));
-    const [selectedYear, setSelectedYear] = useState(new Date().toISOString().split('T')[0].substring(0, 4));
-    const [markedDates, setMarkedDates] = useState({});
-    const [selectedDate, setSelectedDate] = useState('');
-    const [selectedStressLevel, setSelectedStressLevel] = useState(0);
+
 
     useEffect(() => {
         const fetchTodayStressData = async () => {
@@ -43,111 +40,98 @@ const StressScreen = ({ navigation }) => {
                 const result = await response.json();
 
                 if (result.error) {
-                    switch (result.error) {
-                        case 'ERR_NOT_FOUND':
-                            setError('User not found');
-                            break;
-                        default:
-                            console.error('Unexpected error in Server:', result.error);
-                            setError('Server error');
+                    if (result.error == 'ERR_NOT_FOUND') {
+                        setError('User not found');
+                    } else if (result.error == 'ERROR_STRESS_RECORD_EXIST') {
+                        console.error('here');
+                        setError('Stress record already exists');
+                    } else {
+                        console.error('Unexpected error in Server:', result.error);
+                        setError('Server error');
                     }
+
                 } else {
                     const { data } = result;
                     if (data == 0) {
                         setShowRatingSection(true);
                         setShowRingCircle(false);
+                        setFetchingData(false);
                     } else {
                         setShowRatingSection(false);
                         setShowRingCircle(true);
                         setTodayStressLevel(data);
+                        setFetchingData(false);
                     }
                 }
                 setFetchingData(false);
             } catch (error) {
                 console.error('Not catched error in Frontend:', error);
                 setError('Server error');
+                setFetchingData(false);
             }
         };
         fetchTodayStressData();
-        fetchMonthStressData(selectedMonth, selectedYear);
-    }, [showRatingSection, showRingCircle, selectedMonth]);
+    }, [showRatingSection, showRingCircle]);
 
     const handleSliderChange = (value) => {
         setCurrentStressLevel(value);
     };
 
-    const fetchSelectedStressData = async (selectedDateString) => {
+    const handlePredictionClick = async () => {
+        setupdateLoading(true);
         try {
             const userId = await AsyncStorage.getItem('userId');
-            const response = await fetch(baseStressURL + 'today', {
+            const response = await fetch(baseStressURL + 'prediction', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    userId,
-                    date: selectedDateString
+                    userId
                 }),
             });
             const result = await response.json();
-
+            console.log('Result:', result);
             if (result.error) {
                 switch (result.error) {
-                    case 'ERR_NOT_FOUND':
-                        setError('User not found');
+                    case 'ABSENT_FEATURES':
+                        console.error('Missing data for analysis.');
+                        setError('Missing data for analysis. Please sync data before process.');
+                        break;
+                    case 'CONNECT_FAILED':
+                        setTodayStressLevel(1);
+                        setShowRatingSection(!showRatingSection);
+                        setShowRingCircle(!showRingCircle);
+                        console.log('here')
+                        setupdateLoading(false);
+                        //console.error('Connection failed with Fitbit server.');
                         break;
                     default:
-                        console.error('Unexpected error in Server:', result.error);
-                        setError('Server error');
+                        console.error('Unexpected error:', result.error);
+                        setError('Server error. Please try it later.');
+                        setupdateLoading(false);
+                        break;
                 }
             } else {
-                const { data } = result;
-                if (data == 0) {
-                    setSelectedStressLevel(0);
-                } else {
-                    setSelectedStressLevel(data);
-                }
+                const { data } = result as { data: StressDTO };
+                setTodayStressLevel(data.stressLevel);
+                setShowRatingSection(false);
+                setShowRingCircle(true);
+                setupdateLoading(false);
             }
         } catch (error) {
-            console.error('Not catched error in Frontend:', error);
+            console.error('Error updating stress data:', error);
             setError('Server error');
-        }
-    };
-
-    const fetchMonthStressData = async (month, year) => {
-        try {
-            const userId = await AsyncStorage.getItem('userId');
-            const response = await fetch(baseStressURL + 'monthly', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId,
-                    month,
-                    year,
-                }),
-            });
-            const result = await response.json();
-
-            if (result.error) {
-                console.error('Unexpected error in server:', result.error);
-                setError('Server error');
-            } else {
-                const { data } = result as { data: StressDTO[] };
-                const updatedMarkedDates = { ...markedDates };
-                data.forEach((record) => {
-                    updatedMarkedDates[record.date] = { marked: true };
-                });
-                setMarkedDates(updatedMarkedDates);
-            }
-        } catch (error) {
-            console.error('Error in Frontend:', error);
-            setError('Server error');
+            setupdateLoading(false);
         }
     };
 
     const handleUpdateClick = async () => {
+        if (currentStressLevel === 0 || currentStressLevel === null || currentStressLevel === undefined || currentStressLevel > 5) {
+            setError('Please select a valid stress level');
+            return;
+        }
+        setupdateLoading(true);
         try {
             const userId = await AsyncStorage.getItem('userId');
             const response = await fetch(baseStressURL + 'input', {
@@ -165,25 +149,26 @@ const StressScreen = ({ navigation }) => {
             if (result.error) {
                 console.error('Unexpected error in server:', result.error);
                 setError('Server error');
+                setupdateLoading(false);
             } else {
                 const { data } = result as { data: StressDTO };
+                setTodayStressLevel(data.stressLevel);
                 setShowRatingSection(false);
                 setShowRingCircle(true);
-                setTodayStressLevel(data.stressLevel);
+                setupdateLoading(false);
             }
         } catch (error) {
             console.error('Error updating stress level:', error);
             setError('Server error');
+            setupdateLoading(false);
         }
     };
 
-    const handlePredictionClick = () => {
-        navigation.navigate('Prediction');
-    };
+
 
     const handleDismissError = () => {
         setError('');
-        // navigation.navigate('Dashboard');
+        navigation.navigate('Dashboard');
     };
 
     return (
@@ -193,94 +178,66 @@ const StressScreen = ({ navigation }) => {
 
                 {showRatingSection && (
                     <View style={styles.ratingContainer}>
+                        <Title style={{ paddingBottom: 30 }}>Rate your stress level</Title>
                         <View style={styles.sliderContainer}>
+                            <Text style={styles.sliderLabel}>Low</Text>
                             <Slider
                                 style={styles.slider}
                                 minimumValue={0}
-                                maximumValue={10}
+                                maximumValue={5}
                                 step={1}
                                 value={currentStressLevel}
                                 onValueChange={handleSliderChange}
-                                thumbTintColor="#f9a825"
-                                minimumTrackTintColor="#f9a825"
-                                maximumTrackTintColor="#bdbdbd"
                             />
-                            <View style={styles.sliderLabels}>
-                                <Text style={styles.sliderLabel}>0</Text>
-                                <Text style={styles.sliderLabel}>10</Text>
-                            </View>
+                            <Text style={styles.sliderLabel}>High</Text>
                         </View>
-                        <Text style={styles.ratingText}>Rate your stress level</Text>
-                        <Button style={styles.button} mode="contained" onPress={handleUpdateClick}>
-                            Update
+
+                        <Button style={styles.button} mode="contained" onPress={handleUpdateClick} disabled={updateLoading}  >
+                            Save
                         </Button>
 
-                        {isFabVisible && (
-                            <FAB
-                                style={styles.fab}
-                                icon={({ size, color }) => (
-                                    <FontAwesome name="edit" size={size} color={color} />
-                                )}
-                                onPress={handlePredictionClick}
-                            />
-                        )}
+
+                        <Button style={styles.button} mode="contained" onPress={handlePredictionClick} disabled={updateLoading}>
+                            Analysis
+                        </Button>
+
                     </View>
                 )}
+
+                {updateLoading && (
+                    <View>
+                        <ActivityIndicator animating={true} size="large" color={'blue'} />
+                        <Text style={{ fontSize: 30, textAlign: 'center' }} >Processing...</Text>
+                    </View>
+                )}
+
+
                 {showRingCircle && (
                     <View>
                         <Headline>Today's stress level</Headline>
                         {!fetchingData && todayStressLevel ? (
-                            <View style={styles.emoticonContainer}>
-                                {todayStressLevel <= 3 && <FontAwesome name="smile-o" size={150} color="green" />}
-                                {todayStressLevel > 3 && todayStressLevel <= 7 && <FontAwesome name="meh-o" size={150} color="orange" />}
-                                {todayStressLevel > 7 && <FontAwesome name="frown-o" size={150} color="red" />}
-                                <Text style={{ fontSize: 18 }}>{todayStressLevel}</Text>
-                            </View>
+                            <>
+                                <View style={styles.emoticonContainer}>
+                                    {todayStressLevel <= 3 && <FontAwesome name="smile-o" size={150} color="green" />}
+                                    {todayStressLevel > 3 && todayStressLevel <= 7 && <FontAwesome name="meh-o" size={150} color="orange" />}
+                                    {todayStressLevel > 7 && <FontAwesome name="frown-o" size={150} color="red" />}
+
+                                </View>
+                                <Text style={{ fontSize: 25, textAlign: 'center' }}>{todayStressLevel}</Text>
+                            </>
                         ) : (
                             <Text>No stress level recorded for today</Text>
                         )}
                     </View>
                 )}
-                <View style={styles.calendarContainer}>
-                    <Calendar
-                        markingType={'dot'}
-                        markedDates={monthStressRecords}
-                        const onDayPress={(day) => {
-                            const selectedDateString = day.dateString;
-                            fetchSelectedStressData(selectedDateString);
-                        }}
-                        onMonthChange={(month) => {
-                            setSelectedMonth(month.dateString.substring(5, 7));
-                            setSelectedYear(month.dateString.substring(0, 4));
-                            fetchMonthStressData(selectedMonth, selectedYear);
-                        }}
-                        theme={{
-                            textDayFontFamily: 'Roboto',
-                            textMonthFontFamily: 'Roboto',
-                            textDayHeaderFontFamily: 'Roboto',
-                            textDayFontSize: 16,
-                            textMonthFontSize: 16,
-                            textDayHeaderFontSize: 16,
-                            todayTextColor: '#f9a825',
-                            arrowColor: '#f9a825',
-                        }}
-                    />
-                </View>
-                {selectedDate && selectedStressLevel && (
-                    <View style={styles.selectionContainer}>
-                        <Text style={styles.selectedDateText}>Selected Date: {selectedDate}</Text>
-                        {selectedStressLevel > 0 ? (
-                            <Text style={styles.stressLevelText}>Stress Level: {selectedStressLevel}</Text>
-                        ) : (
-                            <Text style={styles.stressLevelText}>No record found</Text>
-                        )
-                        }
-                        {selectedStressLevel == 0 && (
-                            <Button onPress={handleOpenStressInput}>Update</Button>
-                        )}
 
-                    </View>
-                )}
+
+                <StressChart />
+                <Text style={styles.title}>Stress Management Missions</Text>
+                <Mission />
+
+
+
             </ScrollView>
         </Provider>
     );
@@ -324,6 +281,7 @@ const styles = StyleSheet.create({
     },
     button: {
         width: 120,
+        marginBottom: 16,
     },
     circleContainer: {
         alignItems: 'center',

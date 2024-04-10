@@ -6,6 +6,7 @@ import ErrorDialog from '../../utils/ErrorDialog';
 import { ScrollView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RankDTO } from '../../common/dto';
+import { serverURL } from '../../api/config';
 
 const QuizHome = (navigation) => {
     const [leaderboardData, setLeaderboardData] = useState([]);
@@ -19,7 +20,7 @@ const QuizHome = (navigation) => {
     const fetchRanking = async () => {
         try {
             const userId = AsyncStorage.getItem('userId');
-            const response = await fetch('http://192.168.0.159:8080/ranke', {
+            const response = await fetch(`${serverURL}/rank`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
