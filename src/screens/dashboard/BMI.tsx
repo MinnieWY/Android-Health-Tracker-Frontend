@@ -1,79 +1,89 @@
 import { ScrollView, View, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ProgressBar, Banner, Text, Provider, Button } from "react-native-paper";
-import ErrorDialog from "../../utils/ErrorDialog";
+import { ProgressBar, Banner, Text, Provider, ActivityIndicator } from "react-native-paper";
 import { BMIDTO } from "../../common/dto";
 import { serverURL } from "../../api/config";
+import { RefreshControl } from "react-native-gesture-handler";
+
 const BMI = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [profileCompleted, setProfileCompleted] = useState(false);
     const [BMIData, setBMIData] = useState(null as BMIDTO | null);
+    const [refreshing, setRefreshing] = React.useState(false);
 
     useEffect(() => {
-        const fetchBMI = async () => {
-            try {
-                setLoading(true);
-                const userId = await AsyncStorage.getItem("userId");
-                const response = await fetch(`${serverURL}dashboard/BMI`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        userId,
-                    }),
-                });
 
-                const result = await response.json();
-                if (result.error) {
-                    if (result.error === "Profile not completed") {
-                        console.error("Catched error:", result.error);
-                        setProfileCompleted(false);
-                        setLoading(false);
-                    } else if (result.error === "BMI_INVALID") {
-                        console.error("Catched error:", result.error);
-                        setError("There is issue in your profile data. Visit the Profile Screen to update your information");
-                        setLoading(false);
-                    } else {
-                        console.error("here");
-                        console.error("Unexpected error:", result.error);
-                        setError("Server error");
-                        setLoading(false);
-                    }
-
-                } else {
-                    const { data } = result as { data: BMIDTO };
-                    setProfileCompleted(true);
-                    setBMIData(data);
-                    setLoading(false);
-                }
-            } catch (error) {
-                console.error("Error fetching BMI data:", error);
-            }
-
-        };
         fetchBMI();
 
     }, []);
 
+    const fetchBMI = async () => {
+        try {
+            setLoading(true);
+            setError("");
+            const userId = await AsyncStorage.getItem("userId");
+            const response = await fetch(`${serverURL}dashboard/BMI`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    userId,
+                }),
+            });
 
-    const handleDismissError = () => {
-        setError("");
+            const result = await response.json();
+            if (result.error) {
+                if (result.error === "PROFILE_NOT_COMPLETE") {
+                    setError("Fill in your profile to get your BMI calculated");
+                    setProfileCompleted(false);
+                    setLoading(false);
+                } else if (result.error === "BMI_INVALID") {
+                    setError("There is an issue in your profile data. Visit the Profile Screen to update your information");
+                    setProfileCompleted(true);
+                    setLoading(false);
+                } else {
+                    console.error("Unexpected error:", result.error);
+                    setError("Server error for BMI data");
+                    setLoading(false);
+                }
+
+            } else {
+                const { data } = result as { data: BMIDTO };
+                setProfileCompleted(true);
+                setBMIData(data);
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error("Error fetching BMI data:", error);
+        }
+
+    };
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        setTimeout(() => {
+            fetchBMI();
+            setRefreshing(false);
+        }, 2000);
     };
 
     return (
         <Provider>
-            <ScrollView>
-                {error !== "" && (
-                    <ErrorDialog error={error} onDismiss={handleDismissError} />
-                )}
-
-                {!loading && !profileCompleted && (
+            <ScrollView refreshControl={
+                <RefreshControl refreshing={refreshing}
+                    onRefresh={onRefresh} />
+            } >
+                {loading && (
+                    <View>
+                        <ActivityIndicator animating={true} size="large" color={'blue'} />
+                        <Text style={{ fontSize: 20, textAlign: 'center' }} >Loading BMI...</Text>
+                    </View>)}
+                {!loading && error !== "" && (
                     <Banner style={styles.banner} visible={true}>
-                        <Text style={styles.bannerText}>Fill in your profile to get your BMI calculated</Text>
-                        <Text style={styles.bannerText}>Visit the Profile Screen to update your information</Text>
+                        <Text style={styles.bannerText}>{error}</Text>
                     </Banner>
                 )}
                 {!loading && profileCompleted && BMIData && (

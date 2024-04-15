@@ -91,7 +91,7 @@ const StressScreen = ({ navigation }) => {
                 }),
             });
             const result = await response.json();
-            console.log('Result:', result);
+
             if (result.error) {
                 switch (result.error) {
                     case 'ABSENT_FEATURES':
@@ -102,9 +102,8 @@ const StressScreen = ({ navigation }) => {
                         setTodayStressLevel(1);
                         setShowRatingSection(!showRatingSection);
                         setShowRingCircle(!showRingCircle);
-                        console.log('here')
                         setupdateLoading(false);
-                        //console.error('Connection failed with Fitbit server.');
+                        console.error('Connection failed with Fitbit');
                         break;
                     default:
                         console.error('Unexpected error:', result.error);

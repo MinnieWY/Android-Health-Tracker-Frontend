@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserDTO } from '../../common/dto';
-import { Card, Divider, Drawer, Headline, List, Text, Title, TextInput, Portal, Button, Provider, Avatar, Dialog, DefaultTheme } from 'react-native-paper';
+import { Card, Divider, Drawer, Headline, List, Text, Title, TextInput, Portal, Button, Provider, Avatar, Dialog, DefaultTheme, ActivityIndicator } from 'react-native-paper';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { serverURL } from '../../api/config';
 
@@ -12,16 +12,30 @@ const ProfileScreen = ({ navigation }) => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [updatePasswordError, setUpdatePasswordError] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
+                setLoading(true);
                 const userId = await AsyncStorage.getItem('userId');
                 const response = await fetch(`${serverURL}${userId}`);
                 const result = await response.json();
 
-                const { data, metadata } = result as { data: UserDTO, metadata: any };
-                setUserInfo(data);
+                if (result.error) {
+                    if (result.error === 'ERR_NOT_FOUND') {
+                        setError('User not found');
+                        setLoading(false);
+                    } else {
+                        console.error('Unexpected Error in server:', result.error);
+                        setLoading(false);
+                    }
+                } else {
+                    const { data } = result as { data: UserDTO };
+                    setUserInfo(data);
+                    setLoading(false);
+                }
             } catch (error) {
                 console.error('Unexpected Error:', error);
             }
@@ -45,7 +59,6 @@ const ProfileScreen = ({ navigation }) => {
                 }),
             });
             const result = await response.json();
-            console.log('Result:', result);
             if (result.error) {
                 switch (result.error) {
                     case 'ERR_PASSWORD_MISMATCHED':
@@ -66,11 +79,6 @@ const ProfileScreen = ({ navigation }) => {
             setUpdatePasswordError('Error updating password');
         }
     };
-
-    if (userInfo === null) {
-        return (<Text>Loading...</Text>)
-    };
-
 
     const handleNavigateToPersonalInfo = () => {
         navigation.navigate('Personal Information');
@@ -102,15 +110,22 @@ const ProfileScreen = ({ navigation }) => {
     return (
         <Provider theme={DefaultTheme}>
             <ScrollView style={styles.container}>
-                <Card>
-                    <TouchableOpacity onPress={handleNavigateToPersonalInfo}>
-                        <Card.Content>
-                            <Avatar.Icon size={50} icon="account" style={styles.avatar} />
-                            <Title>Welcome back, {userInfo.username}!</Title>
-                            <Text variant="labelLarge">{userInfo.email}</Text>
-                        </Card.Content>
-                    </TouchableOpacity>
-                </Card>
+                {loading && (
+                    <View>
+                        <ActivityIndicator animating={true} size="large" color={'blue'} />
+                        <Text style={{ fontSize: 20, textAlign: 'center' }} >Loading Profile...</Text>
+                    </View>)}
+                {!loading && userInfo && (
+                    <Card>
+                        <TouchableOpacity onPress={handleNavigateToPersonalInfo}>
+                            <Card.Content>
+                                <Avatar.Icon size={50} icon="account" style={styles.avatar} />
+                                <Title>Welcome back, {userInfo.username}!</Title>
+                                <Text variant="labelLarge">{userInfo.email}</Text>
+                            </Card.Content>
+                        </TouchableOpacity>
+                    </Card>
+                )}
                 <View style={styles.communityContainer}>
                     <Headline>Let's Talk</Headline>
                     <Card>

@@ -30,7 +30,7 @@ const ShareScreen = ({ navigation }) => {
                 },
                 body: JSON.stringify({
                     userId,
-                    steps: 12191,
+                    steps,
                     startDate: startDate.toLocaleDateString('en-GB'),
                 }),
             });

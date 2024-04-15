@@ -47,7 +47,7 @@ const StressChart = () => {
                 }
             } catch (error) {
                 setFetching(false);
-                console.log('Error when fetch Stress Data in Server:', error);
+                console.error('Error when fetch Stress Data in Server:', error);
                 setError('Server Error');
             }
         };

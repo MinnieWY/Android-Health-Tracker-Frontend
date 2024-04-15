@@ -7,6 +7,7 @@ import ErrorDialog from '../../utils/ErrorDialog';
 import Sleep from './Sleep';
 import BMI from './BMI';
 import { serverURL } from '../../api/config';
+
 const DashboardScreen = ({ navigation }) => {
     const [error, setError] = useState('');
     const [loadStep, setLoadStep] = useState(true);
@@ -15,45 +16,42 @@ const DashboardScreen = ({ navigation }) => {
     const [totalSteps, setTotalSteps] = useState(0);
 
     useEffect(() => {
-        const fetchDashboardData = async () => {
-            try {
-                setLoadStep(true);
-                const userId = await AsyncStorage.getItem('userId');
-                const response = await fetch(`${serverURL}dashboard/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        userId
-                    }),
-                });
-
-                const result = await response.json();
-                if (result.error) {
-                    console.error('Unexpected error in server:', result.error);
-                    setError('Server error');
-                    setLoadStep(false);
-                } else {
-                    const { data } = result;
-                    setStepsData(data.steps);
-
-                    // setTotalSteps(getTotalSteps(stepsData));
-                    // setAverageSteps(getAverageSteps(totalSteps));
-
-                    setTotalSteps(85340);
-                    setAverageSteps(12191);
-
-                    setLoadStep(false);
-                }
-            } catch (error) {
-                console.error('Error in Frontend:', error);
-                setError('Server error');
-            }
-        };
-
         fetchDashboardData();
     }, []);
+
+    const fetchDashboardData = async () => {
+        try {
+            setLoadStep(true);
+            const userId = await AsyncStorage.getItem('userId');
+            const response = await fetch(`${serverURL}dashboard/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId
+                }),
+            });
+
+            const result = await response.json();
+            if (result.error) {
+                console.error('Unexpected error in server:', result.error);
+                setError('Server error');
+                setLoadStep(false);
+            } else {
+                const { data } = result;
+                setStepsData(data.steps);
+
+                setTotalSteps(getTotalSteps(stepsData));
+                setAverageSteps(getAverageSteps(totalSteps));
+
+                setLoadStep(false);
+            }
+        } catch (error) {
+            console.error('Error in Frontend:', error);
+            setError('Server error');
+        }
+    };
 
     const handleDismissError = () => {
         setError('');
@@ -64,7 +62,7 @@ const DashboardScreen = ({ navigation }) => {
     };
 
     const getAverageSteps = (totalSteps) => {
-        return totalSteps / 7;
+        return Math.ceil(totalSteps / 7);
     }
 
     const getTotalSteps = (data) => {
@@ -148,7 +146,7 @@ const DashboardScreen = ({ navigation }) => {
                                             icon="share-variant"
                                             mode="contained"
                                             onPress={() => navigation.navigate('Share', { date: Object.keys(stepsData)[0], steps: averageSteps })}
-                                        //disabled={averageSteps < 42000}
+                                            disabled={averageSteps < 6400}
                                         >
                                             Share
                                         </Button>
